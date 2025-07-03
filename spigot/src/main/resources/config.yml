@@ -1,0 +1,346 @@
+#all information for mongo. AuthDB is NOT the database you will use for documents to go into
+mongo:
+  enabled: true
+  host: "127.0.0.1"
+  port: 27017
+  auth: false
+  username: ""
+  password: ""
+  authDB: ""
+  database: "Alchemist"
+
+#leave blank to not use!
+uri: ""
+
+#all redis information. This is used for messaging from server to server
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  username: ""
+  password: ""
+
+debug:
+  noJoinEvents: false
+
+hubCommand:
+  enabled: true
+  loadBalance: true
+  connectedMessage: "&6You are joining the hub &f{hub}&6..."
+  priorities:
+    - "hub-01"
+    - "hub-02"
+
+#server information to identify the server
+server:
+  id: "server1"
+
+#information for sending notifications using Discord
+discord:
+  punishments:
+    enabled: false
+    webhookLink: "LINK_HERE"
+  grants:
+    enabled: false
+    webhookLink: "LINK_HERE"
+
+coinshop:
+  #adds this after the lore
+  bottom_schema:
+    - " "
+    - "&a&lClick Here To Purchase"
+    - " "
+
+chat:
+  slowChatMessage: "&cChat is currently slowed! Please wait &c&l<seconds> seconds"
+  muteChatMessage: "&cChat is currently muted! You may not talk right now"
+  format: "<prefix_string><rank_string><player_name>&7: &7<color_string><message>"
+  rankToSendLinks:
+    enabled: false
+    minimum_rank: "partner" #any rank you want it to be
+
+autobroadcast:
+  enabled: true
+  interval: 60 #seconds
+
+#theme info
+defaultTheme: "MMC"
+
+disguise:
+  commonNames:
+    - Dream
+    - itsJhalt
+    - 98ping
+    - Preceding
+  popularNames:
+    - Technoblade
+    - Spyno
+    - MeeZoid
+
+#information regarding profiles
+profiles:
+  load:
+    sendMessage: true
+    message: "&b✓ &aYour profile has been successfully loaded"
+
+
+#info for the grant procedure
+grants:
+  durationMenuSize: 27
+  reasonMenuSize: 27
+
+#enable and disable all modules
+#when doing this, you ensure that
+#no commands/features of each system
+#are loaded on the server. This means that
+#performance will not be negatively affected
+modules:
+  ranks: true
+  punishments: true
+  parties: true
+  friends: true
+  prefixes: true
+  coins: true
+  filters: true
+  #does work but is a little buggy tbh
+  queue: false
+  chatcolors: true
+  notes: true
+  staffmode: true
+  chat: true
+  vouchers: true
+  essentials: true
+  2fa: true
+  themeCommands: true
+  lunarClientAPI: true
+  # Disguise requires the DisguiseAPI plugin.
+  disguise: true
+  websiteCommands: true
+
+staffmode:
+  sendWelcomeMessage: true
+  autoEquipOnJoin: false
+  allowPermittedBlockModification: true
+  invseeCommand: true
+  sendSettingSummaryOnJoin: true
+
+#for general server information to use in command messages
+details:
+  genericName: "Alchemist"
+  ip: "yourIp.xyz"
+  serverWebsite: "www.yourIp.xyz"
+
+channels:
+  staffChat: "&b[SC] &7(%server%) &f%profile%&7: &b%message%"
+  adminChat: "&c[AC] &7(%server%) &f%profile%&7: &c%message%"
+
+#to incentivise players to play your server longer
+freeRank:
+  enabled: true
+  message:
+    - "change me!"
+  command: "cgrant <target> Default 10m Hello World"
+
+# Message sent to player after granting them something
+grant-message: "&eYou have been granted the &r<rank> &erank for a duration of &6<duration>."
+
+#Console information
+consoleColor: "&c&l"
+
+#Message configuration
+message:
+  message_format_from: "&7(From &r<from> &7to &cme&7) &f<message>"
+  message_format_to: "&7(From &cme &7to &r<from>&7) &f<message>"
+  staff_message_format_to: "&7(From &3&oStaff &7to &r<to>&7) &f<message>"
+  staff_message_format_from: "&7(From &3&oStaff &7to &cme&7) &f<message>"
+  sound: "LEVEL_UP"
+
+#Reminder for people who are stuck in a queue
+queue-message:
+  - " "
+  - "&dYou are position &e#<pos> &din the &e<queue_name> &dqueue,"
+  - "&bYour &f<colored_rank> &brank has placed you in front of <front> players."
+  - "&6To leave the queue, use /leavequeue"
+  - " "
+
+# Message to be sent to player when they are blacklisted from the server
+blacklist-message:
+  - "&cYou are blacklisted from this server."
+  - "&cReason: &r<reason>"
+
+ban-message:
+  - "&cYou are banned from this server."
+  - "&cReason: &r<reason>"
+
+mute-message:
+  - "&cYou are muted on this server."
+  - "&cReason: &r<reason>"
+
+muted-chat:
+  - "&cYou are muted on this server."
+  - "&cReason: &r<reason>"
+
+kick-message:
+  - "&cYou were kicked from this server."
+  - "&cReason: &r<reason>"
+
+warn-message:
+  - "&cYou have been warned on this server."
+  - "&cReason: &r<reason>"
+
+banned-join:
+  - "&cYou are currently banned from the server!"
+  - "&cReason: &r<reason>"
+  - "&cExpires: &r<expires>"
+
+blacklisted-join:
+  - "&cYou are currently blacklisted from the server!"
+  - "&cReason: &r<reason>"
+  - "&cExpires: &r<expires>"
+
+blacklisted-join-related:
+  - "&cYou are currently blacklisted from the server!"
+  - "&cReason: &r<reason>"
+  - "&cExpires: &r<expires>"
+  - "&cIn Relation To: &r<related>"
+
+custom-theme:
+  grant:
+    scope-display: '&7- &a<scope>'
+    accessible:
+      item-name: "<rank>"
+      lore:
+        - "&6&m-----------------------------"
+        - "&ePriority: &6<priority>"
+        - "&ePrefix: &6<prefix>"
+        - "&eColor: &6<color>this"
+        - "&eDefault: &6<default>"
+        - "&eStaff Rank: &6<staff_rank>"
+        - "&6&m-----------------------------"
+        - "&eScopes:"
+        - "<scopes>"
+        - "&6&m-----------------------------"
+        - "&a&lLeft click to grant &r<rank> &a&lto &r<target>&a&l."
+        - "&6&m-----------------------------"
+    inaccessible:
+      item-name: "<rank>"
+      lore:
+
+  grants:
+    active-item:
+      name: '&a&l(Active)&r &a<issued_date>'
+      material: WOOL
+      data: 5
+    inactive-item:
+      name: '&c&l(Inactive)&r &c<issued_date>'
+      material: WOOL
+      data: 14
+    expired-item:
+      name: '&6&l(Expired)&r &6<issued_date>'
+      material: WOOL
+      data: 1
+    lore:
+      scope-display: '&7- &a<scope>'
+      active:
+        permanent:
+          - '&6&m-------------------------------------'
+          - '&eTarget: &f<target>'
+          - '&eRank: &f<rank>'
+          - '&eDuration: &fForever'
+          - '&6&m-------------------------------------'
+          - '&eScopes:'
+          - <scopes>
+          - '&6&m-------------------------------------'
+          - '&eIssued By: &f<issued_by>'
+          - '&eIssued Reason: &f<issued_reason>'
+          - '&6&m-------------------------------------'
+          - '&aRight-Click to remove this grant from &f<target>&a.'
+          - '&aLeft-Click to edit the scopes of this grant'
+          - '&6&m-------------------------------------'
+        temporary:
+          - '                &a<expires_at>'
+          - '&6&m-------------------------------------'
+          - '&eTarget: &f<target>'
+          - '&eRank: &f<rank>'
+          - '&eDuration: &f<duration>'
+          - '&6&m-------------------------------------'
+          - '&eScopes:'
+          - <scopes>
+          - '&6&m-------------------------------------'
+          - '&eIssued By: &f<issued_by>'
+          - '&eIssued Reason: &f<issued_reason>'
+          - '&6&m-------------------------------------'
+          - '&aRight-Click to remove this grant from &f<target>&a.'
+          - '&aLeft-Click to edit the scopes of this grant'
+          - '&6&m-------------------------------------'
+      inactive:
+        permanent:
+          - '                &c<removal_date>'
+          - '&6&m-------------------------------------'
+          - '&eTarget: &f<target>'
+          - '&eRank: &f<rank>'
+          - '&eDuration: &fForever'
+          - '&6&m-------------------------------------'
+          - '&eScopes:'
+          - <scopes>
+          - '&6&m-------------------------------------'
+          - '&eIssued By: &f<issued_by>'
+          - '&eIssued Reason: &f<issued_reason>'
+          - '&6&m-------------------------------------'
+          - '&eRemoved By: &f<removed_by>'
+          - '&eRemoval Reason: &f<removal_reason>'
+          - '&6&m-------------------------------------'
+          - '&aRight-Click to remove this grant from &f<target>&a.'
+          - '&aLeft-Click to edit the scopes of this grant'
+          - '&6&m-------------------------------------'
+        temporary:
+          - '                &c<removal_date>'
+          - '&6&m-------------------------------------'
+          - '&eTarget: &f<target>'
+          - '&eRank: &f<rank>'
+          - '&eDuration: &f<duration>'
+          - '&6&m-------------------------------------'
+          - '&eScopes:'
+          - <scopes>
+          - '&6&m-------------------------------------'
+          - '&eIssued By: &f<issued_by>'
+          - '&eIssued Reason: &f<issued_reason>'
+          - '&6&m-------------------------------------'
+          - '&eRemoved By: &f<removed_by>'
+          - '&eRemoval Reason: &f<removal_reason>'
+          - '&6&m-------------------------------------'
+          - '&aRight-Click to remove this grant from &f<target>&a.'
+          - '&aLeft-Click to edit the scopes of this grant'
+          - '&6&m-------------------------------------'
+      expired:
+        permanent:
+          - '                &6<removal_date>'
+          - '&6&m-------------------------------------'
+          - '&eTarget: &f<target>'
+          - '&eRank: &f<rank>'
+          - '&eDuration: &fForever'
+          - '&6&m-------------------------------------'
+          - '&eScopes:'
+          - <scopes>
+          - '&6&m-------------------------------------'
+          - '&eIssued By: &f<issued_by>'
+          - '&eIssued Reason: &f<issued_reason>'
+          - '&6&m-------------------------------------'
+          - '&aRight-Click to remove this grant from &f<target>&a.'
+          - '&aLeft-Click to edit the scopes of this grant'
+          - '&6&m-------------------------------------'
+        temporary:
+          - '                &6<removal_date>'
+          - '&6&m-------------------------------------'
+          - '&eTarget: &f<target>'
+          - '&eRank: &f<rank>'
+          - '&eDuration: &f<duration>'
+          - '&6&m-------------------------------------'
+          - '&eScopes:'
+          - <scopes>
+          - '&6&m-------------------------------------'
+          - '&eIssued By: &f<issued_by>'
+          - '&eIssued Reason: &f<issued_reason>'
+          - '&6&m-------------------------------------'
+          - '&aRight-Click to remove this grant from &f<target>&a.'
+          - '&aLeft-Click to edit the scopes of this grant'
+          - '&6&m-------------------------------------'
