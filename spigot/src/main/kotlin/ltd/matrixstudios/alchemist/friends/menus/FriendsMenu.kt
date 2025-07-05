@@ -79,7 +79,7 @@ class FriendsMenu(val player: Player, val profile: GameProfile) : Menu(player) {
 
                         // If target has sent an invite to player (pending invite from other side)
                         if (playerProfile.friendInvites.contains(targetProfile.uuid)) {
-                            player.sendMessage(Chat.format("&cThis player has already sent you a friend request! Use /friend accept to accept it."))
+                            player.sendMessage(Chat.format("&cThis player has already sent you a friend request! Use /friend to accept it in menu."))
                             return@thenAcceptAsync
                         }
 
@@ -93,7 +93,7 @@ class FriendsMenu(val player: Player, val profile: GameProfile) : Menu(player) {
                         AsynchronousRedisSender.send(
                             NetworkMessagePacket(
                                 targetProfile.uuid,
-                                Chat.format("&e&l[Friends] &aYou have received a friend request from &f" + playerProfile.username + "&a! Type &f/friend accept &ato accept.")
+                                Chat.format("&e&l[Friends] &aYou have received a friend request from &f" + playerProfile.username + "&a! Type &f/friend &ato accept in menu.")
                             )
                         )
                     }

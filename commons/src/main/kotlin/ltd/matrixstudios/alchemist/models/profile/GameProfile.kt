@@ -18,6 +18,7 @@ import ltd.matrixstudios.alchemist.models.tags.Tag
 import ltd.matrixstudios.alchemist.punishments.PunishmentType
 import ltd.matrixstudios.alchemist.punishments.actor.ActorType
 import ltd.matrixstudios.alchemist.punishments.actor.DefaultActor
+import ltd.matrixstudios.alchemist.redis.RedisOnlineStatusService
 import ltd.matrixstudios.alchemist.punishments.actor.executor.Executor
 import ltd.matrixstudios.alchemist.service.expirable.PunishmentService
 import ltd.matrixstudios.alchemist.service.expirable.RankGrantService
@@ -270,9 +271,7 @@ data class GameProfile(
 
     fun isOnline(): Boolean
     {
-        if (metadata.get("server") == null) return false
-
-        return metadata.get("server").asString != "None"
+        return RedisOnlineStatusService.isOnline(uuid)
     }
 
     fun getNiceServerName(): String

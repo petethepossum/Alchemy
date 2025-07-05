@@ -1,9 +1,7 @@
 package ltd.matrixstudios.alchemist.staff.requests.commands
 
 import co.aikar.commands.BaseCommand
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandPermission
-import co.aikar.commands.annotation.Name
+import co.aikar.commands.annotation.*
 import ltd.matrixstudios.alchemist.Alchemist
 import ltd.matrixstudios.alchemist.api.AlchemistAPI
 import ltd.matrixstudios.alchemist.redis.AsynchronousRedisSender
@@ -25,44 +23,53 @@ class ReportCommand : BaseCommand() {
     }
 
     @CommandAlias("report")
-    fun request(player: Player, @Name("player") other: String, @Name("reason") vararg rzn: String) {
-        if (RequestHandler.isOnReportCooldown(player)) {
-            player.sendMessage(Chat.format("&cPlease wait before trying this again!"))
-            return
-        }
+    @CommandCompletion("@gameprofile")
+    @Syntax("<player> <reason...>")
+    fun request(player: Player, @Name("player") target: String, @Name("reason") @Flags("greedy") reason: String) {
+        try {
+            val targetPlayer = Bukkit.getPlayer(target) ?: run {
+                player.sendMessage(Chat.format("&cThe specified player is not online or does not exist."))
+                return
+            }
 
-        val target = Bukkit.getPlayer(other) ?: run {
-            player.sendMessage(Chat.format("&cInvalid target"))
-            return
-        }
+            if (player.name.equals(targetPlayer.name, ignoreCase = true)) {
+                player.sendMessage(Chat.format("&cYou cannot report yourself!"))
+                return
+            }
 
-        if (player.name == target.name) {
-            player.sendMessage(Chat.format("&cYou cannot report yourself!"))
-            return
-        }
+            if (RequestHandler.isOnReportCooldown(player)) {
+                player.sendMessage(Chat.format("&cYou are on cooldown. Please wait before reporting again!"))
+                return
+            }
 
-        val currentServer = Alchemist.globalServer.displayName
-        val display = AlchemistAPI.getRankDisplay(player.uniqueId)
-        val otherDisplay = AlchemistAPI.getRankDisplay(target.uniqueId)
+            if (reason.isBlank()) {
+                player.sendMessage(Chat.format("&cYou must provide a valid reason for the report."))
+                return
+            }
 
-        // Join the reason parts back into a single string
-        val reason = rzn.joinToString(" ")
+            val display = AlchemistAPI.getRankDisplay(player.uniqueId)
+            val otherDisplay = AlchemistAPI.getRankDisplay(targetPlayer.uniqueId)
+            val server = Alchemist.globalServer.displayName
 
-        AsynchronousRedisSender.send(
-            ReportPacket(
-                "&9[Report] &7[$currentServer] &b$display &7has reported &f$otherDisplay\n     &9Reason: &7$reason",
-                ReportModel(
-                    UUID.randomUUID(),
-                    reason,
-                    player.uniqueId,
-                    target.uniqueId,
-                    currentServer,
-                    System.currentTimeMillis()
+            AsynchronousRedisSender.send(
+                ReportPacket(
+                    "&9[Report] &7[$server] &b$display &7has reported &f$otherDisplay\n     &9Reason: &7$reason",
+                    ReportModel(
+                        UUID.randomUUID(),
+                        reason,
+                        player.uniqueId,
+                        targetPlayer.uniqueId,
+                        server,
+                        System.currentTimeMillis()
+                    )
                 )
             )
-        )
 
-        RequestHandler.reportCooldowns[player.uniqueId] = System.currentTimeMillis()
-        player.sendMessage(Chat.format("&aYour report has been sent to every online staff member!"))
+            RequestHandler.reportCooldowns[player.uniqueId] = System.currentTimeMillis()
+            player.sendMessage(Chat.format("&aYour report has been successfully sent to online staff members!"))
+        } catch (e: Exception) {
+            player.sendMessage(Chat.format("&cAn unexpected error occurred while processing your report. Please try again later."))
+            e.printStackTrace() // Replace with proper logging in production
+        }
     }
 }

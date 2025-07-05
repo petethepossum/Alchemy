@@ -51,6 +51,7 @@ import ltd.matrixstudios.alchemist.queue.command.ModifyQueueCommands
 import ltd.matrixstudios.alchemist.queue.command.QueueCommands
 import ltd.matrixstudios.alchemist.redis.command.RedisCommand
 import ltd.matrixstudios.alchemist.servers.commands.BroadcastCommand
+import ltd.matrixstudios.alchemist.staff.requests.commands.ReportCommand
 import ltd.matrixstudios.alchemist.themes.commands.ThemeSelectCommand
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -104,6 +105,7 @@ object ACFCommandController
 
             registerCommand(AdminPanelCommand())
             registerCommand(RedisCommand)
+            registerCommand(ReportCommand())
             registerCommand(AutoBroadcastCommands)
 
             if (config.getBoolean("modules.vouchers"))

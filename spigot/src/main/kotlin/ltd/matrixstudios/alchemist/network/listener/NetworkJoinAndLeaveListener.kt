@@ -4,6 +4,7 @@ import ltd.matrixstudios.alchemist.Alchemist
 import ltd.matrixstudios.alchemist.api.AlchemistAPI
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import ltd.matrixstudios.alchemist.service.session.SessionService
+import ltd.matrixstudios.alchemist.redis.RedisOnlineStatusService
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
@@ -15,6 +16,7 @@ class NetworkJoinAndLeaveListener : Listener
     @EventHandler
     fun disconnect(e: PlayerQuitEvent)
     {
+        RedisOnlineStatusService.markOffline(e.player.uniqueId)
         AlchemistAPI.quickFindProfile(e.player.uniqueId).thenApply {
             if (it != null)
             {
@@ -42,6 +44,7 @@ class NetworkJoinAndLeaveListener : Listener
         val profile = AlchemistAPI.syncFindProfile(e.uniqueId) ?: return
 
         profile.metadata.addProperty("server", Alchemist.globalServer.id)
+        RedisOnlineStatusService.markOnline(profile.uuid, Alchemist.globalServer.id)
         profile.lastSeenAt = System.currentTimeMillis()
 
         ProfileGameService.save(profile)
