@@ -82,6 +82,7 @@ class PartyCommands : BaseCommand()
     }
 
     @Subcommand("invite")
+    @CommandCompletion("@gameprofile")
     @Description("Invites a given player to your party.")
     fun onInvite(
         player: Player,
@@ -137,7 +138,8 @@ class PartyCommands : BaseCommand()
         }
     }
 
-    @Subcommand("join")
+    @Subcommand("join|accept")
+    @CommandCompletion("@gameprofile")
     @Description("Join the party of a player that has invited you.")
     fun onJoin(
         player: Player,

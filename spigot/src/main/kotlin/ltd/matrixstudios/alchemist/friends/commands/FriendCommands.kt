@@ -15,11 +15,11 @@ import ltd.matrixstudios.alchemist.util.Chat
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-
 class FriendCommands : BaseCommand()
 {
 
     @CommandAlias("friend|friends")
+    @Default
     fun friend(player: Player)
     {
         val profile = player.getProfile()
@@ -33,12 +33,11 @@ class FriendCommands : BaseCommand()
         FriendsMenu(player, profile).openMenu()
     }
 
-    //@Subcommand("add")
-    //@CommandCompletion("@gameprofile")
+    @Subcommand("add")
+    @CommandCompletion("@gameprofile")
     fun add(player: Player, @Name("target") gameProfile: GameProfile)
     {
         val playerProfile = AlchemistAPI.quickFindProfile(player.uniqueId).join() ?: return
-        val bukkitPlayer = Bukkit.getOfflinePlayer(gameProfile.uuid)
 
         if (gameProfile.friends.contains(player.uniqueId))
         {
@@ -52,6 +51,11 @@ class FriendCommands : BaseCommand()
             return
         }
 
+        if (gameProfile.friendInvites.contains(player.uniqueId)) {
+            player.sendMessage(Chat.format("&cThis player has already sent you a friend request! Use /friend accept to accept it."))
+            return
+        }
+
         if (gameProfile.uuid == player.uniqueId)
         {
             player.sendMessage(Chat.format("&cCannot friend yourself!"))
@@ -59,7 +63,7 @@ class FriendCommands : BaseCommand()
         }
 
         gameProfile.friendInvites.add(player.uniqueId)
-        player.sendMessage(Chat.format("&e&l[Friends] &aYou have send a friend request to &f" + gameProfile.username))
+        player.sendMessage(Chat.format("&e&l[Friends] &aYou have sent a friend request to &f" + gameProfile.username))
 
         AsynchronousRedisSender.send(
             NetworkMessagePacket(
@@ -77,20 +81,28 @@ class FriendCommands : BaseCommand()
         ProfileGameService.save(gameProfile)
     }
 
-    //@Subcommand("list")
+    @Subcommand("list")
     fun list(player: Player)
     {
-        val gameProfile = AlchemistAPI.quickFindProfile(player.uniqueId).get()!!
+        val gameProfile = AlchemistAPI.quickFindProfile(player.uniqueId).get() ?: run {
+            player.sendMessage(Chat.format("&cYour profile does not exist!"))
+            return
+        }
 
         FriendsListMenu(player, gameProfile, FriendFilter.ALL).updateMenu()
     }
 
-    //@Subcommand("accept")
-    //@CommandCompletion("@gameprofile")
+    @Subcommand("accept")
+    @CommandCompletion("@gameprofile")
     fun accept(player: Player, @Name("target") gameProfile: GameProfile)
     {
         val it = ProfileGameService.byId(player.uniqueId)
-        if (!it?.friendInvites!!.contains(gameProfile.uuid))
+        if (it == null) {
+            player.sendMessage(Chat.format("&cYour profile does not exist!"))
+            return
+        }
+
+        if (!it.friendInvites.contains(gameProfile.uuid))
         {
             player.sendMessage(Chat.format("&cThis player has never tried friending you!"))
             return
@@ -112,6 +124,42 @@ class FriendCommands : BaseCommand()
                 Chat.format("&e&l[Friends] &f" + player.name + " &ahas accepted your friend request!")
             )
         )
-
+        AsynchronousRedisSender.send(
+            NetworkMessagePacket(
+                gameProfile.uuid,
+                Chat.format("&e&l[Friends] &aYou can now see them in your friends list!")
+            )
+        )
     }
+
+    @Subcommand("remove")
+    @CommandCompletion("@gameprofile")
+    fun remove(player: Player, @Name("target") gameProfile: GameProfile)
+    {
+        val playerProfile = ProfileGameService.byId(player.uniqueId)
+        if (playerProfile == null)
+        {
+            player.sendMessage(Chat.format("&cYour profile does not exist!"))
+            return
+        }
+
+        if (!playerProfile.friends.contains(gameProfile.uuid))
+        {
+            player.sendMessage(Chat.format("&cThat player is not your friend!"))
+            return
+        }
+
+        playerProfile.friends.remove(gameProfile.uuid)
+        gameProfile.friends.remove(player.uniqueId)
+
+        ProfileGameService.save(playerProfile)
+        ProfileGameService.save(gameProfile)
+
+        player.sendMessage(Chat.format("&e&l[Friends] &aYou have removed ${gameProfile.username} from your friends list."))
+
+        // Notify the other player if online
+        val onlinePlayer = Bukkit.getPlayer(gameProfile.uuid)
+        onlinePlayer?.sendMessage(Chat.format("&e&l[Friends] &f${player.name} &ahas removed you from their friends list."))
+    }
+
 }

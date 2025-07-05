@@ -1,6 +1,5 @@
 package ltd.matrixstudios.alchemist.friends.menus
 
-
 import ltd.matrixstudios.alchemist.friends.filter.FriendFilter
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
@@ -10,20 +9,19 @@ import ltd.matrixstudios.alchemist.util.menu.Button
 import ltd.matrixstudios.alchemist.util.menu.Menu
 import ltd.matrixstudios.alchemist.util.menu.buttons.PlaceholderButton
 import ltd.matrixstudios.alchemist.util.menu.buttons.SimpleActionButton
+import ltd.matrixstudios.alchemist.packets.NetworkMessagePacket
+import ltd.matrixstudios.alchemist.redis.AsynchronousRedisSender
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class FriendsMenu(val player: Player, val profile: GameProfile) : Menu(player)
-{
+class FriendsMenu(val player: Player, val profile: GameProfile) : Menu(player) {
 
-    init
-    {
+    init {
         staticSize = 27
         placeholder = true
     }
 
-    override fun getButtons(player: Player): MutableMap<Int, Button>
-    {
+    override fun getButtons(player: Player): MutableMap<Int, Button> {
         val buttons = mutableMapOf<Int, Button>()
 
         buttons[11] = SimpleActionButton(
@@ -47,27 +45,57 @@ class FriendsMenu(val player: Player, val profile: GameProfile) : Menu(player)
                 Chat.format("&7to a player on the network")
             ), Chat.format("&bSend Friend Request"), 0
         ).setBody { player, i, clickType ->
+
             InputPrompt()
                 .withText(Chat.format("&eType another user's name into chat to send them a &afriend request!"))
                 .acceptInput { s ->
-                    ProfileGameService.byUsernameWithList(s).thenAcceptAsync { profiles ->
-                        val it = profiles.firstOrNull()
 
-                        if (it == null)
-                        {
+                    ProfileGameService.byUsernameWithList(s).thenAcceptAsync { profiles ->
+                        val targetProfile = profiles.firstOrNull()
+
+                        if (targetProfile == null) {
                             player.sendMessage(Chat.format("&cThis player does not exist!"))
                             return@thenAcceptAsync
                         }
 
-                        if (it.friendInvites.contains(player.uniqueId))
-                        {
+                        if (targetProfile.uuid == player.uniqueId) {
+                            player.sendMessage(Chat.format("&cYou cannot friend yourself!"))
+                            return@thenAcceptAsync
+                        }
+
+                        val playerProfile = ProfileGameService.byId(player.uniqueId) ?: return@thenAcceptAsync
+
+                        // Already friends check
+                        if (playerProfile.friends.contains(targetProfile.uuid)) {
+                            player.sendMessage(Chat.format("&cYou are already friends with this player!"))
+                            return@thenAcceptAsync
+                        }
+
+                        // If player already sent an invite to target
+                        if (targetProfile.friendInvites.contains(player.uniqueId)) {
                             player.sendMessage(Chat.format("&cYou already have an outgoing friend request to this player!"))
                             return@thenAcceptAsync
                         }
 
-                        it.friendInvites.add(player.uniqueId)
-                        ProfileGameService.saveSync(it)
-                        player.sendMessage(Chat.format("&e&l[Friends] &aYou have sent a friend request to " + it.getCurrentRank().prefix + it.getRankDisplay()))
+                        // If target has sent an invite to player (pending invite from other side)
+                        if (playerProfile.friendInvites.contains(targetProfile.uuid)) {
+                            player.sendMessage(Chat.format("&cThis player has already sent you a friend request! Use /friend accept to accept it."))
+                            return@thenAcceptAsync
+                        }
+
+                        // Add friend invite to target
+                        targetProfile.friendInvites.add(player.uniqueId)
+                        ProfileGameService.saveSync(targetProfile)
+
+                        player.sendMessage(Chat.format("&e&l[Friends] &aYou have sent a friend request to " + targetProfile.getCurrentRank().prefix + targetProfile.getRankDisplay()))
+
+                        // Notify target player
+                        AsynchronousRedisSender.send(
+                            NetworkMessagePacket(
+                                targetProfile.uuid,
+                                Chat.format("&e&l[Friends] &aYou have received a friend request from &f" + playerProfile.username + "&a! Type &f/friend accept &ato accept.")
+                            )
+                        )
                     }
                 }.start(player)
         }
@@ -101,8 +129,7 @@ class FriendsMenu(val player: Player, val profile: GameProfile) : Menu(player)
         return buttons
     }
 
-    override fun getTitle(player: Player): String
-    {
+    override fun getTitle(player: Player): String {
         return "Configure Friends"
     }
 }
