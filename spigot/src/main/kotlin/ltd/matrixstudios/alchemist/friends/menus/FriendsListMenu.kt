@@ -133,7 +133,7 @@ class FriendsListMenu(val player: Player, val profile: GameProfile, val filter: 
                 ProfileGameService.save(playerProfile)
                 ProfileGameService.save(profile)
 
-                player.sendMessage(Chat.format("&e&l[Friends] &aYou have &e&lremoved&r ${profile.username} &efrom your friends list."))
+                player.sendMessage(Chat.format("&e&l[Friends] &aYou have &e&lremoved&r ${profile.getCurrentRank().prefix + profile.getRankDisplay()} &afrom your friends list."))
 
                 // Notify removed friend if online
                 val onlinePlayer = player.server.getPlayer(profile.uuid)

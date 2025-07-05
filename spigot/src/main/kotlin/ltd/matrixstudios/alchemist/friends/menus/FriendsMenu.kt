@@ -93,7 +93,7 @@ class FriendsMenu(val player: Player, val profile: GameProfile) : Menu(player) {
                         AsynchronousRedisSender.send(
                             NetworkMessagePacket(
                                 targetProfile.uuid,
-                                Chat.format("&e&l[Friends] &aYou have received a friend request from &f" + playerProfile.username + "&a! Type &f/friend &ato accept in menu.")
+                                Chat.format("&e&l[Friends] &aYou have received a friend request from &f" + playerProfile.getCurrentRank().prefix + playerProfile.getRankDisplay() + "&a! Type &f/friend &ato accept in menu.")
                             )
                         )
                     }

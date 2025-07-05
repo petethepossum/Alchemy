@@ -24,10 +24,9 @@ class ReportCommand : BaseCommand() {
 
     @CommandAlias("report")
     @CommandCompletion("@gameprofile")
-    @Syntax("<player> <reason...>")
-    fun request(player: Player, @Name("player") target: String, @Name("reason") @Flags("greedy") reason: String) {
+    fun request(player: Player, @Name("player")other:String, @Name("reason")rzn: String) {
         try {
-            val targetPlayer = Bukkit.getPlayer(target) ?: run {
+            val targetPlayer = Bukkit.getPlayer(other) ?: run {
                 player.sendMessage(Chat.format("&cThe specified player is not online or does not exist."))
                 return
             }
@@ -42,7 +41,7 @@ class ReportCommand : BaseCommand() {
                 return
             }
 
-            if (reason.isBlank()) {
+            if (rzn.isBlank()) {
                 player.sendMessage(Chat.format("&cYou must provide a valid reason for the report."))
                 return
             }
@@ -53,10 +52,10 @@ class ReportCommand : BaseCommand() {
 
             AsynchronousRedisSender.send(
                 ReportPacket(
-                    "&9[Report] &7[$server] &b$display &7has reported &f$otherDisplay\n     &9Reason: &7$reason",
+                    "&9[Report] &7[$server] &b$display &7has reported &f$otherDisplay\n     &9Reason: &7$rzn",
                     ReportModel(
                         UUID.randomUUID(),
-                        reason,
+                        rzn,
                         player.uniqueId,
                         targetPlayer.uniqueId,
                         server,
@@ -69,7 +68,7 @@ class ReportCommand : BaseCommand() {
             player.sendMessage(Chat.format("&aYour report has been successfully sent to online staff members!"))
         } catch (e: Exception) {
             player.sendMessage(Chat.format("&cAn unexpected error occurred while processing your report. Please try again later."))
-            e.printStackTrace() // Replace with proper logging in production
+            e.printStackTrace()
         }
     }
 }

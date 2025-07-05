@@ -29,6 +29,7 @@ object EssentialsModule : PluginModule
         commands.add(RenameCommand())
 
         commands.add(InventoryCopyingCommands())
+        commands.add(SpeedCommand())
         commands.add(TeleportationCommands())
 
         commands.add(EntityCommands)

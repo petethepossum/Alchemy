@@ -39,6 +39,14 @@ object RedisCommand : BaseCommand()
             )
         )
         player.sendMessage(Chat.format("&cPort&7: &f${Alchemist.redisConnectionPort}"))
+        val onlinePlayers = try {
+            RedisPacketManager.pool.resource.use { jedis ->
+                jedis.keys("Alchemist:online:*").size
+            }
+        } catch (ex: Exception) {
+            -1
+        }
+        player.sendMessage(Chat.format("&cOnline Players (Redis)&7: &f${if (onlinePlayers >= 0) onlinePlayers else "&cError"}"))
         player.sendMessage(Chat.format("&7&m--------------------------"))
     }
 }
