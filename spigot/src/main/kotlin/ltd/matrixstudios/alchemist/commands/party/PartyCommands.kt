@@ -123,11 +123,58 @@ class PartyCommands : BaseCommand()
 
             currentParty.invited[gameProfile.uuid] = System.currentTimeMillis()
             player.sendMessage(Chat.format("&7[&dParties&7] &aYou have just sent a party invitation to ${gameProfile.getRankDisplay()}"))
-
+            //testing party invites
+            val invitedBukkitPlayer = org.bukkit.Bukkit.getPlayer(gameProfile.uuid)
+            println("Inviting player: ${gameProfile.username}, UUID: ${gameProfile.uuid}, Online: ${invitedBukkitPlayer != null}")
+            invitedBukkitPlayer?.sendMessage(
+                Chat.format("&7[&dParties&7] &aYou have just been invited to join the party of ${player.displayName}!")
+            )
+            //party invite end test
             with(PartyService.handler) {
                 this.store(currentParty.id, currentParty)
                 PartyService.backingPartyCache[currentParty.id] = currentParty
             }
+        }
+    }
+
+    @Subcommand("join")
+    @Description("Join the party of a player that has invited you.")
+    fun onJoin(
+        player: Player,
+        @Name("target") target: AsyncGameProfile
+    ): CompletableFuture<Void> {
+        return target.use(player) { inviterProfile ->
+            val targetParty = PartyService.getParty(inviterProfile.uuid).get()
+                ?: throw ConditionFailedException("&cThat player is not currently in a party.")
+
+            if (!targetParty.invited.containsKey(player.uniqueId)) {
+                throw ConditionFailedException("&cYou have not been invited to this party.")
+            }
+
+            // Already in a party?
+            val existingParty = PartyService.getParty(player.uniqueId).get()
+            if (existingParty != null) {
+                throw ConditionFailedException("&cYou are already in a party! Use &e/party leave &cto leave your current one.")
+            }
+
+            // Expiry check (optional, 5 mins example)
+            val inviteTime = targetParty.invited[player.uniqueId]!!
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - inviteTime > (5 * 60 * 1000)) {
+                targetParty.invited.remove(player.uniqueId)
+                PartyService.save(targetParty)
+                throw ConditionFailedException("&cThat party invite has expired.")
+            }
+
+            // Add to party and clean up invite
+            targetParty.members[player.uniqueId] = PartyElevation.MEMBER
+            targetParty.invited.remove(player.uniqueId)
+
+            PartyService.save(targetParty)
+
+            player.sendMessage(Chat.format("&aYou have joined &e${inviterProfile.username}'s &aparty!"))
+            val inviter = org.bukkit.Bukkit.getPlayer(inviterProfile.uuid)
+            inviter?.sendMessage(Chat.format("&a${player.name} has joined your party!"))
         }
     }
 
@@ -212,6 +259,7 @@ class PartyCommands : BaseCommand()
             player.sendMessage(" ")
         }
     }
+
 
     @HelpCommand
     @Description("Displays the command help.")

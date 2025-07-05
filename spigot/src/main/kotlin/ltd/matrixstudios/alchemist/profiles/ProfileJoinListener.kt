@@ -13,6 +13,7 @@ import ltd.matrixstudios.alchemist.redis.AsynchronousRedisSender
 import ltd.matrixstudios.alchemist.service.ranks.RankService
 import ltd.matrixstudios.alchemist.util.Chat
 import ltd.matrixstudios.alchemist.util.TimeUtil
+import ltd.matrixstudios.alchemist.party.PartyDisconnectListener
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler

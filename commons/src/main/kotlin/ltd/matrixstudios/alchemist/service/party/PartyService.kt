@@ -15,6 +15,13 @@ object PartyService : GeneralizedService {
     var handler = Alchemist.dataHandler.createStoreType<UUID, Party>(Alchemist.getDataStoreMethod())
     val backingPartyCache = mutableMapOf<UUID, Party>()
 
+    fun save(party: Party) {
+        handler.storeAsync(party.id, party)
+        backingPartyCache[party.id] = party
+    }
+
+
+
     fun getParty(uuid: UUID): CompletableFuture<Party?>
     {
         for (party in backingPartyCache.values)
@@ -39,6 +46,7 @@ object PartyService : GeneralizedService {
                     return@thenApply mongoParty
                 }
             }
+
 
             null
         }

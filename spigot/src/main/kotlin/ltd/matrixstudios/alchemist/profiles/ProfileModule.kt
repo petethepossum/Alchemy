@@ -27,6 +27,10 @@ object ProfileModule : PluginModule
     {
         val start = System.currentTimeMillis()
         BukkitProfileAdaptation.loadAllEvents()
+        val plugin = AlchemistSpigotPlugin.instance //this is a hacky way of doing this, but it works
+        plugin.server.pluginManager.registerEvents(
+            ltd.matrixstudios.alchemist.party.PartyDisconnectListener(), plugin
+        )
 
         Chat.sendConsoleMessage(
             "&b[Profiles] &fAll profile events loaded in &b" + System.currentTimeMillis().minus(start) + "ms"
