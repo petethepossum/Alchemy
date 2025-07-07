@@ -1,12 +1,14 @@
-# Alchemist
-A swift and efficient rank core meant to work on all versions
+# Alchemy FORK OF "Alchmeist"
+Based on: https://github.com/98ping/Alchemist
+A swift and efficient rank core meant to work on all versions 
 
-Made by 98ping, utilized projects from devrawr and aikiar
+Forked and Updated by petethepossum
+Original Made by 98ping, utilised projects from devrawr and aikiar
 
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-2.9-blue.svg?cacheSeconds=2592000" />
   <img src="https://img.shields.io/badge/kotlin-1.6.10-blue.svg" />
-  <a href="https://github.com/98ping/Alchemist/graphs/commit-activity" target="_blank">
+  <a href="https://github.com/petethepossum/Alchemy/graphs/commit-activity" target="_blank">
     <img alt="Maintenance" src="https://img.shields.io/badge/maintained-yes-brightgreen.svg" />
   </a>
 </p>
@@ -28,9 +30,9 @@ Soon to be added:
 
 # Using
 
-You can implement it by compiling or head on over to JitPack and search up 98ping/Alchemist. You can use any of our versions from any tag there
+You can implement it by compiling or looking in the releases page for compiled jars
 
-![Alt](https://repobeats.axiom.co/api/embed/1f4d288d4dcbdc05fc3d0dd7f31408ce08d5b260.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/f8edecb55953ce5438420f5e95b80a916e4f846b.svg "Repobeats analytics image")
 
 ## Contributing Rules
 
