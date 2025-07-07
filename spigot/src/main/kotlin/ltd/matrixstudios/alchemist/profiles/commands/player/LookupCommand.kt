@@ -50,6 +50,9 @@ class LookupCommand : BaseCommand()
         }.runTaskLater(AlchemistSpigotPlugin.instance, 0L)
 
         Bukkit.getLogger().log(Level.INFO, "Player lookup took " + System.currentTimeMillis().minus(start) + "ms")
+
     }
+
+
 
 }

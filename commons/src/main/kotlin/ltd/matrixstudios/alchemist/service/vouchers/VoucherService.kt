@@ -58,7 +58,7 @@ object VoucherService : GeneralizedService {
         handler.storeAsync(newVoucher.uniqueId, newVoucher)
     }
 
-    fun allGrantsFromPlayer(player: UUID): MutableList<VoucherGrant> {
+     fun allGrantsFromPlayer(player: UUID): MutableList<VoucherGrant> {
         if (voucherGrants.containsKey(player)) {
             return voucherGrants[player]!!
         }

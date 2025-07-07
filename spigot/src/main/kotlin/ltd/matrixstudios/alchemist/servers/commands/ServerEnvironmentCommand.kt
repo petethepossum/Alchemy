@@ -15,7 +15,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
 
-@CommandAlias("senv|env|environment")
+@CommandAlias("senv|env|environment|servermanager")
 class ServerEnvironmentCommand : BaseCommand()
 {
 
