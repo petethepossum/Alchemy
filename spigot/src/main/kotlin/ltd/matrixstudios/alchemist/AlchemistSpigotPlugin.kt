@@ -280,6 +280,7 @@ class AlchemistSpigotPlugin : JavaPlugin()
             arrayOf(
                 "&7&m--------------------------------",
                 "&a&lMatrix Studios Software &7- &f" + description.name + " &7[&a" + description.version + "&7]",
+                "&a&lForked from &fAlchemist &a&linto &fAlchemy &a&l by petethepossum",
                 "",
                 "&fThis plugin has been distributed by Matrix Studios.",
                 "&fPlugin is not intended to be resold.",

@@ -22,7 +22,12 @@ class VoucherCommand : BaseCommand()
     @Default
     fun openMenu(player: Player)
     {
-        VoucherGrantsMenu(player, VoucherService.allGrantsFromPlayer(player.uniqueId)).updateMenu()
+        val grants = VoucherService.allGrantsFromPlayer(player.uniqueId)
+        if (grants.isEmpty()) {
+            player.sendMessage(Chat.format("&cYou do not have any vouchers. Use &f/voucher info &c to see how to get some!"))
+            return
+        }
+        VoucherGrantsMenu(player, grants).updateMenu()
     }
 
     @Subcommand("help")
@@ -31,6 +36,15 @@ class VoucherCommand : BaseCommand()
     fun help(help: CommandHelp)
     {
         help.showHelp()
+    }
+
+    @Subcommand("info")
+    fun info(player: Player)
+    {
+        player.sendMessage(Chat.format("&eVouchers are a way to give players items, commands, or other rewards."))
+        player.sendMessage(Chat.format("&eYou can get vouchers by completing tasks, winning events, or purchasing them."))
+        player.sendMessage(Chat.format("&eUse &f/voucher &eto view your vouchers and redeem them."))
+        player.sendMessage(Chat.format("&eFor more information, contact a staff member."))
     }
 
     @Subcommand("template setprize")
