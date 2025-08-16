@@ -5,7 +5,6 @@ import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import ltd.matrixstudios.alchemist.staff.settings.toggle.menu.SettingsMenu
 import ltd.matrixstudios.alchemist.util.Chat
 import ltd.matrixstudios.alchemist.util.menu.Button
-import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -13,12 +12,12 @@ import org.bukkit.event.inventory.ClickType
 class CanSeeOtherStaffSetting(val profile: GameProfile) : Button() {
 
     private fun isEnabled(): Boolean {
-        // Make sure to check the boolean value, not just metadata presence
+        // Check the boolean value of metadata
         return profile.metadata.has("seeOtherStaff") && profile.metadata.get("seeOtherStaff").asBoolean
     }
 
     override fun getMaterial(player: Player): Material {
-        return Material.WOOL
+        return if (isEnabled()) Material.EMERALD_BLOCK else Material.REDSTONE_BLOCK
     }
 
     override fun getDescription(player: Player): MutableList<String> {
@@ -46,16 +45,14 @@ class CanSeeOtherStaffSetting(val profile: GameProfile) : Button() {
     }
 
     override fun getData(player: Player): Short {
-        return if (isEnabled()) DyeColor.LIME.woolData.toShort() else DyeColor.RED.woolData.toShort()
+        return 0
     }
 
     override fun onClick(player: Player, slot: Int, type: ClickType) {
         if (isEnabled()) {
-            // Turn off
             profile.metadata.remove("seeOtherStaff")
             player.sendMessage(Chat.format("&eYou have toggled your staff visibility to &coff"))
         } else {
-            // Turn on
             profile.metadata.addProperty("seeOtherStaff", true)
             player.sendMessage(Chat.format("&eYou have toggled your staff visibility to &aon"))
         }

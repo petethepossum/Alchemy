@@ -2,6 +2,7 @@ package ltd.matrixstudios.alchemist.profiles.connection.postlog.tasks
 
 import ltd.matrixstudios.alchemist.AlchemistSpigotPlugin
 import ltd.matrixstudios.alchemist.api.AlchemistAPI
+import ltd.matrixstudios.alchemist.chat.ChatModule
 import ltd.matrixstudios.alchemist.profiles.connection.postlog.BukkitPostLoginTask
 import ltd.matrixstudios.alchemist.profiles.getProfile
 import ltd.matrixstudios.alchemist.staff.mode.StaffSuiteManager
@@ -26,7 +27,7 @@ object SendStaffWelcome : BukkitPostLoginTask
     {
         Bukkit.getScheduler().runTaskLater(AlchemistSpigotPlugin.instance, {
             val config = AlchemistSpigotPlugin.instance.config
-            val dateFormat = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
+            val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
             if (player.hasPermission("alchemist.staff"))
             {
@@ -36,7 +37,7 @@ object SendStaffWelcome : BukkitPostLoginTask
                     player.sendMessage(" ")
                     player.sendMessage(Chat.format("&eWelcome back, " + AlchemistAPI.getRankDisplay(player.uniqueId)))
                     player.sendMessage(Chat.format("&eIt is currently &d" + dateFormat.format(Date(System.currentTimeMillis()))))
-                    player.sendMessage(Chat.format("&eEdit your mod mode with &a/editmodmode"))
+                    //player.sendMessage(Chat.format("&eEdit your mod mode with &a/editmodmode"))
                     player.sendMessage(" ")
                 }
 
@@ -52,7 +53,9 @@ object SendStaffWelcome : BukkitPostLoginTask
                 }
 
                 val profile = player.getProfile()
-
+                val chatChannelId = player.getProfile()?.metadata?.get("chat-channel")?.asString ?: "global"
+                val chatMode = ChatModule.ChatMode.values().firstOrNull { it.name.equals(chatChannelId, ignoreCase = true) }
+                val chatDisplay = if (chatMode != null) "${chatMode.displayColour}${chatMode.displayName}" else "&fGlobal"
                 if (profile != null)
                 {
                     if (config.getBoolean("staffmode.sendSettingSummaryOnJoin"))
@@ -60,7 +63,7 @@ object SendStaffWelcome : BukkitPostLoginTask
                         player.sendMessage(" ")
                         player.sendMessage(Chat.format("&6&lYour Settings"))
                         player.sendMessage(Chat.format("&7➥ &eReports: &f${if (RequestHandler.hasReportsEnabled(player)) "&aOn" else "&cOff"}"))
-                        player.sendMessage(Chat.format("&7➥ &eStaff Chat: &f${if (profile.hasMetadata("allMSGSC")) "&aTogged On" else "&cCommand Only"}"))
+                        player.sendMessage(Chat.format("&7➥ &eChat Channel: &f${chatDisplay}"))
                         player.sendMessage(
                             Chat.format(
                                 "&7➥ &eAuto ModMode: &f${

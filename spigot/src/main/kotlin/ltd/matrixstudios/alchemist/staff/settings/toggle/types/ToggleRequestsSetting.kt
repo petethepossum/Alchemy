@@ -5,7 +5,6 @@ import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import ltd.matrixstudios.alchemist.staff.settings.toggle.menu.SettingsMenu
 import ltd.matrixstudios.alchemist.util.Chat
 import ltd.matrixstudios.alchemist.util.menu.Button
-import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -14,7 +13,7 @@ class ToggleRequestsSetting(val profile: GameProfile) : Button()
 {
     override fun getMaterial(player: Player): Material
     {
-        return Material.WOOL
+        return if (!profile.hasMetadata("toggleRequests")) Material.EMERALD_BLOCK else Material.REDSTONE_BLOCK
     }
 
     override fun getDescription(player: Player): MutableList<String>
@@ -46,7 +45,7 @@ class ToggleRequestsSetting(val profile: GameProfile) : Button()
 
     override fun getData(player: Player): Short
     {
-        return if (!profile.hasMetadata("toggleRequests")) DyeColor.LIME.woolData.toShort() else DyeColor.RED.woolData.toShort()
+        return 0
     }
 
     override fun onClick(player: Player, slot: Int, type: ClickType)

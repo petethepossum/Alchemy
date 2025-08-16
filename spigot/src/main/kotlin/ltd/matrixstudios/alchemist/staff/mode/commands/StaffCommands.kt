@@ -16,18 +16,15 @@ import ltd.matrixstudios.alchemist.util.skull.SkullUtil
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-class StaffCommands : BaseCommand()
-{
+class StaffCommands : BaseCommand() {
 
     @CommandAlias("givestaffitems")
     @CommandPermission("alchemist.admin")
     @CommandCompletion("@gameprofile")
-    fun staffitems(player: Player, @Name("other") profile: GameProfile)
-    {
+    fun staffitems(player: Player, @Name("other") profile: GameProfile) {
         val bukkitPlayer = Bukkit.getPlayer(profile.uuid)
 
-        if (bukkitPlayer == null || !bukkitPlayer.isOnline)
-        {
+        if (bukkitPlayer == null || !bukkitPlayer.isOnline) {
             player.sendMessage(Chat.format("&cThis player is not online!"))
             return
         }
@@ -37,8 +34,7 @@ class StaffCommands : BaseCommand()
         bukkitPlayer.inventory.setItem(2, StaffItems.RANDOMTP)
         bukkitPlayer.inventory.setItem(3, StaffItems.BETTER_VIEW)
 
-        if (bukkitPlayer.hasPermission("alchemist.staffmode.worldedit"))
-        {
+        if (bukkitPlayer.hasPermission("alchemist.staffmode.worldedit")) {
             bukkitPlayer.inventory.setItem(4, StaffItems.WORLDEDIT_AXE)
         }
 
@@ -51,47 +47,37 @@ class StaffCommands : BaseCommand()
 
         bukkitPlayer.updateInventory()
         player.sendMessage(Chat.format("&aGiven this player the default mod mode loadout!"))
-
     }
-
 
     @CommandAlias("staff|h|mod|hacker|staffmode|modmode")
     @CommandPermission("alchemist.staffmode")
-    fun staff(player: Player, @Name("other") @Optional target: String?)
-    {
-        if (target == null)
-        {
+    fun staff(player: Player, @Name("other") @Optional target: String?) {
+        if (target == null) {
             val isIn = StaffSuiteManager.isModMode(player)
 
-            if (isIn)
-            {
+            if (isIn) {
                 StaffSuiteManager.removeStaffMode(player)
                 player.sendMessage(Chat.format("&cYou have left Staff Mode!"))
                 AsynchronousRedisSender.send(StaffActionAlertPacket("has unmodmoded", player.name, Alchemist.globalServer.id))
-            } else
-            {
+            } else {
                 StaffSuiteManager.setStaffMode(player)
                 player.sendMessage(Chat.format("&aYou have went into Staff Mode!"))
                 AsynchronousRedisSender.send(StaffActionAlertPacket("has modmoded", player.name, Alchemist.globalServer.id))
             }
-        } else
-        {
+        } else {
             val targetPlayer = Bukkit.getPlayer(target)
 
-            if (targetPlayer == null)
-            {
+            if (targetPlayer == null) {
                 player.sendMessage(Chat.format("&cInvalid target!"))
                 return
             }
 
             val isIn = StaffSuiteManager.isModMode(targetPlayer)
 
-            if (isIn)
-            {
+            if (isIn) {
                 StaffSuiteManager.removeStaffMode(targetPlayer)
                 targetPlayer.sendMessage(Chat.format("&cYou have left Staff Mode!"))
-            } else
-            {
+            } else {
                 StaffSuiteManager.setStaffMode(targetPlayer)
                 targetPlayer.sendMessage(Chat.format("&aYou have went into Staff Mode!"))
             }
@@ -99,6 +85,7 @@ class StaffCommands : BaseCommand()
             player.sendMessage(Chat.format("&aUpdated the Staff Mode status of &f$target"))
         }
     }
+
     @CommandAlias("togglestaffchat|togglesc|sctoggle|sct")
     @CommandPermission("alchemist.staff")
     fun toggleStaffChat(player: Player) {
@@ -108,12 +95,14 @@ class StaffCommands : BaseCommand()
             return
         }
 
-        if (profile.hasMetadata("allMSGSC")) {
-            profile.metadata.remove("allMSGSC")
-            player.sendMessage(Chat.format("&eAll messages will &cnot &ego into staff chat!"))
+        val currentChannel = profile.metadata.get("chat-channel")?.asString ?: "global"
+
+        if (currentChannel.equals("staff", ignoreCase = true)) {
+            profile.metadata.addProperty("chat-channel", "global")
+            player.sendMessage(Chat.format("&eStaff chat disabled. You are now in &aglobal &echat!"))
         } else {
-            profile.metadata.addProperty("allMSGSC", true)
-            player.sendMessage(Chat.format("&eAll messages &awill &ego into staff chat!"))
+            profile.metadata.addProperty("chat-channel", "staff")
+            player.sendMessage(Chat.format("&eStaff chat enabled. All messages will go into &astaff &echat!"))
         }
 
         ProfileGameService.save(profile)

@@ -27,10 +27,11 @@ object ChatModule : PluginModule
     }
 
 
-    enum class ChatMode(val displayName: String, val permission: String?) {
-        GLOBAL("Global", null),
-        STAFF("Staff", "alchemist.staff"),
-        ADMIN("Admin", "alchemist.admin")
+    enum class ChatMode(val displayName: String, val permission: String?, val displayColour: String) {
+        GLOBAL("Global", null, "&7"),
+        STAFF("Staff", "alchemist.staff", "&a"),
+        ADMIN("Admin", "alchemist.admin", "&c")
     }
+
 
 }

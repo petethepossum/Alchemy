@@ -6,7 +6,7 @@ import ltd.matrixstudios.alchemist.util.Chat
 import org.bukkit.Bukkit
 import java.util.*
 
-class AdminChatPacket(val message: String, val server: String, val sender: UUID) : RedisPacket("admin-message")
+class AdminMessagePacket(val message: String, val server: String, val sender: UUID) : RedisPacket("admin-message")
 {
 
     override fun action()

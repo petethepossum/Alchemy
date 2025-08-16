@@ -5,7 +5,6 @@ import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import ltd.matrixstudios.alchemist.staff.settings.toggle.menu.SettingsMenu
 import ltd.matrixstudios.alchemist.util.Chat
 import ltd.matrixstudios.alchemist.util.menu.Button
-import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -14,7 +13,7 @@ class ToggleStaffChatSetting(val profile: GameProfile) : Button()
 {
     override fun getMaterial(player: Player): Material
     {
-        return Material.WOOL
+        return if (!profile.hasMetadata("toggleSC")) Material.EMERALD_BLOCK else Material.REDSTONE_BLOCK
     }
 
     override fun getDescription(player: Player): MutableList<String>
@@ -41,12 +40,12 @@ class ToggleStaffChatSetting(val profile: GameProfile) : Button()
 
     override fun getDisplayName(player: Player): String
     {
-        return Chat.format("&eToggle Staff Chat")
+        return Chat.format("&eToggle Staff Chat Visibility")
     }
 
     override fun getData(player: Player): Short
     {
-        return if (!profile.hasMetadata("toggleSC")) DyeColor.LIME.woolData.toShort() else DyeColor.RED.woolData.toShort()
+        return 0
     }
 
     override fun onClick(player: Player, slot: Int, type: ClickType)
@@ -56,12 +55,12 @@ class ToggleStaffChatSetting(val profile: GameProfile) : Button()
         if (hasMetadata)
         {
             profile.metadata.remove("toggleSC")
-            player.sendMessage(Chat.format("&eYou have toggled your staff chat &aon"))
+            player.sendMessage(Chat.format("&eYou have toggled your staff chat visibility &aon"))
             ProfileGameService.save(profile)
         } else
         {
             profile.metadata.addProperty("toggleSC", true)
-            player.sendMessage(Chat.format("&eYou have toggled your staff chat &coff"))
+            player.sendMessage(Chat.format("&eYou have toggled your staff chat visibility &coff"))
             ProfileGameService.save(profile)
         }
 

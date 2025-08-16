@@ -96,7 +96,10 @@ object ChatCommands : BaseCommand()
     }
 
     private fun sendClickableChannel(player: Player, displayName: String, channelId: String, currentChannel: String) {
-        val comp = TextComponent(Chat.format("&0- &7$displayName"))
+        val chatMode = ChatModule.ChatMode.values().firstOrNull { it.name.equals(channelId, ignoreCase = true) }
+        val colour = chatMode?.displayColour ?: "&f"
+
+        val comp = TextComponent(Chat.format("&8- $colour$displayName"))
         if (channelId.equals(currentChannel, ignoreCase = true)) {
             comp.addExtra(Chat.format(" &7(Currently Selected)"))
         } else {

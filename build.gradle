@@ -8,7 +8,7 @@ plugins {
 
 allprojects {
     group 'ltd.matrixstudios'
-    version '1.21-POSSUM'
+    version '1.23-ALCHEMY'
 
     repositories {
         mavenCentral()

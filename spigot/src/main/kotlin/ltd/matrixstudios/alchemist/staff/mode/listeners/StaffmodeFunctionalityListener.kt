@@ -53,29 +53,23 @@ class StaffmodeFunctionalityListener : Listener
 
                 timestamps[player.uniqueId] = System.currentTimeMillis()
 
-                if (itemInHand.isSimilar(StaffItems.RANDOMTP))
-                {
+                if (itemInHand.isSimilar(StaffItems.RANDOMTP)) {
                     e.isCancelled = true
-                    val actualPlayer = Bukkit.getOnlinePlayers().shuffled().first()
 
-                    if (actualPlayer == null)
-                    {
-                        player.sendMessage(Chat.format("&cAcutal player nulled"))
+
+                    val otherPlayers = Bukkit.getOnlinePlayers().filter { it != player }
+
+                    if (otherPlayers.isEmpty()) {
+                        player.sendMessage(Chat.format("&cNo other players are online to teleport to!"))
                         return
                     }
 
-                    if (actualPlayer == player)
-                    {
-                        player.sendMessage(Chat.format("&cYou cannot teleport to yourself"))
-                        return
-                    }
-
+                    val actualPlayer = otherPlayers.random()
 
                     player.teleport(actualPlayer)
-                    player.sendMessage(Chat.format("&6Teleporting..."))
+                    player.sendMessage(Chat.format("&6Teleporting to &e${actualPlayer.name}&6..."))
                 }
 
-                // only proceed if they have the online staff item
                 if (itemInHand.hasItemMeta() && itemInHand.itemMeta.hasDisplayName() && itemInHand.itemMeta.displayName.contains(
                         "Online Staff"
                     )
