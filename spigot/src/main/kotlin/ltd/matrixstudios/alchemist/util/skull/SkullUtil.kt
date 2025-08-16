@@ -49,13 +49,17 @@ object SkullUtil
         return skull
     }
 
-    fun generate(owner: String, displayname: String): ItemStack
+    fun generate(owner: String, displayname: String, lore: List<String>? = null): ItemStack
     {
         val itemstack = ItemStack(Material.SKULL_ITEM)
 
         itemstack.durability = 3
 
         val itemMeta = itemstack.itemMeta as SkullMeta
+
+        if (lore != null) {
+            itemMeta.lore = lore.map { Chat.format(it) }
+        }
 
         itemMeta.displayName = Chat.format(displayname)
         itemMeta.owner = owner

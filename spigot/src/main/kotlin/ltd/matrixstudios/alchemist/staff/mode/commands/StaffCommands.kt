@@ -3,8 +3,10 @@ package ltd.matrixstudios.alchemist.staff.mode.commands
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.*
 import ltd.matrixstudios.alchemist.Alchemist
+import ltd.matrixstudios.alchemist.api.AlchemistAPI
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
 import ltd.matrixstudios.alchemist.redis.AsynchronousRedisSender
+import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import ltd.matrixstudios.alchemist.staff.alerts.StaffActionAlertPacket
 import ltd.matrixstudios.alchemist.staff.mode.StaffItems
 import ltd.matrixstudios.alchemist.staff.mode.StaffSuiteManager
@@ -96,5 +98,24 @@ class StaffCommands : BaseCommand()
 
             player.sendMessage(Chat.format("&aUpdated the Staff Mode status of &f$target"))
         }
+    }
+    @CommandAlias("togglestaffchat|togglesc|sctoggle|sct")
+    @CommandPermission("alchemist.staff")
+    fun toggleStaffChat(player: Player) {
+        val profile = AlchemistAPI.syncFindProfile(player.uniqueId)
+        if (profile == null) {
+            player.sendMessage(Chat.format("&cYou do not have a profile! Oh No!"))
+            return
+        }
+
+        if (profile.hasMetadata("allMSGSC")) {
+            profile.metadata.remove("allMSGSC")
+            player.sendMessage(Chat.format("&eAll messages will &cnot &ego into staff chat!"))
+        } else {
+            profile.metadata.addProperty("allMSGSC", true)
+            player.sendMessage(Chat.format("&eAll messages &awill &ego into staff chat!"))
+        }
+
+        ProfileGameService.save(profile)
     }
 }

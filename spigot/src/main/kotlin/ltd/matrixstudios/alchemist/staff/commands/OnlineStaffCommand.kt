@@ -3,6 +3,7 @@ package ltd.matrixstudios.alchemist.staff.commands
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.*
 import ltd.matrixstudios.alchemist.api.AlchemistAPI
+import ltd.matrixstudios.alchemist.redis.RedisVanishStatusService
 import ltd.matrixstudios.alchemist.servers.*
 import ltd.matrixstudios.alchemist.service.server.UniqueServerService
 import ltd.matrixstudios.alchemist.util.Chat
@@ -46,7 +47,10 @@ class OnlineStaffCommand : BaseCommand()
 
             if (profile.getCurrentRank().staff)
             {
-                msgs.add(Chat.format("&7- " + AlchemistAPI.getRankDisplay(profile.uuid) + " &eis currently &aonline &eat &f" + serverName))
+                val isVanished = RedisVanishStatusService.isVanished(profile.uuid)
+                val vanishPrefix = if (isVanished) "&7[V] " else ""
+
+                msgs.add(Chat.format("&7- " + vanishPrefix + AlchemistAPI.getRankDisplay(profile.uuid) + " &eis currently &aonline &eat &f" + serverName))
             }
 
         }

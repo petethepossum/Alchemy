@@ -66,74 +66,55 @@ class RankController @Autowired constructor(private val repository: RankReposito
     @RequestMapping(value = ["/api/change-rank/{id}"], method = [RequestMethod.POST])
     fun onAPIRankChange(
         @PathVariable id: String,
-        @RequestBody ref: String,
+        @RequestParam(required = false) displayName: String?,
+        @RequestParam(required = false) prefix: String?,
+        @RequestParam(required = false) color: String?,
+        @RequestParam(required = false) weight: String?,
         request: HttpServletRequest
-    ) : ModelAndView {
-        val profile = request.session.getAttribute("user") as AlchemistUser? ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "You must be logged in to view this page")
-        if (!profile.hasPermission("alchemist.website.ranks")) throw ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to view this page.")
+    ): ModelAndView {
+        val profile = request.session.getAttribute("user") as AlchemistUser?
+            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "You must be logged in to view this page")
+
+        if (!profile.hasPermission("alchemist.website.ranks"))
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to view this page.")
+
         val rankOptional = repository.findById(id.lowercase())
 
-        if (!rankOptional.isPresent)
-        {
-            throw ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "Unable to handle request because rank does not exist!"
-            )
+        if (!rankOptional.isPresent) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Unable to handle request because rank does not exist!")
         }
 
         val rank = rankOptional.get()
-
-        // we dont really need to do this because it is all admins editing the ranks
-        // but just in case we are gonna take extra steps
-        val safeRef = ref
-            .replace("<script>", "<script type=\"javascript/blocked\">")
-            .replace("<div>", "<bdiv>")
-            .replace("</div>", "</bdiv>")
-
         var updated = false
 
-        safeRef.split("&").forEach { decoded ->
-            val input = decoded.split("=")[0]
-            val toSet = decoded.split("=")[1].replace("+", " ")
+        displayName?.let {
+            if (it.isNotBlank()) {
+                rank.displayName = it
+                updated = true
+            }
+        }
 
-            when (input) {
-                "displayName" -> {
-                    if (toSet.isNotEmpty()) {
-                        rank.displayName = toSet
-                        updated = true
-                    }
-                }
+        prefix?.let {
+            if (it.isNotBlank()) {
+                rank.prefix = it.replace("%26", "&")
+                updated = true
+            }
+        }
 
-                "prefix" -> {
-                    if (toSet.isNotEmpty()) {
-                        rank.prefix = toSet.replace("%26", "&")
-                        updated = true
-                    }
-                }
+        color?.let {
+            if (it.isNotBlank()) {
+                rank.color = it.replace("%26", "&")
+                updated = true
+            }
+        }
 
-                "color" -> {
-                    if (toSet.isNotEmpty()) {
-                        rank.color = toSet.replace("%26", "&")
-                        updated = true
-                    }
-                }
-
-                "weight" -> {
-                    if (toSet.isNotEmpty()) {
-                        var integer = Integer.MAX_VALUE
-
-                        try {
-                            integer = Integer.parseInt(toSet)
-                        } catch (_: NumberFormatException) {}
-
-                        // Ensure that people cant set strings to ints without
-                        // checking
-                        if (integer != Integer.MAX_VALUE) {
-                            rank.weight = integer
-                            updated = true
-                        }
-                    }
-                }
+        weight?.let {
+            try {
+                val intWeight = it.toInt()
+                rank.weight = intWeight
+                updated = true
+            } catch (e: NumberFormatException) {
+                // Ignore invalid number input, do not update weight
             }
         }
 
@@ -143,7 +124,6 @@ class RankController @Autowired constructor(private val repository: RankReposito
         }
 
         val modelAndView = ModelAndView("rank-editor")
-
         modelAndView.addObject("section", "rank-editor")
         modelAndView.addObject("rank", rank)
         modelAndView.addObject("user", profile)

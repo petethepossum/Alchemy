@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand
 import ltd.matrixstudios.alchemist.AlchemistSpigotPlugin
 import ltd.matrixstudios.alchemist.module.PluginModule
 import ltd.matrixstudios.alchemist.profiles.commands.auth.AuthCommands
+import ltd.matrixstudios.alchemist.profiles.commands.player.ProfileCommand
 import ltd.matrixstudios.alchemist.profiles.commands.player.*
 import ltd.matrixstudios.alchemist.profiles.commands.sibling.SiblingCommands
 import ltd.matrixstudios.alchemist.profiles.commands.website.RegisterCommand
@@ -47,6 +48,8 @@ object ProfileModule : PluginModule
         }
 
         list.add(ListCommand())
+        list.add(ProfileCommand())
+        list.add(PlayTimeCommand())
         list.add(LookupCommand())
         list.add(PlayerAdminCommand())
         list.add(SudoCommand())

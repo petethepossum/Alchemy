@@ -25,4 +25,12 @@ object ChatModule : PluginModule
     {
         return AlchemistSpigotPlugin.instance.config.getBoolean("modules.chat")
     }
+
+
+    enum class ChatMode(val displayName: String, val permission: String?) {
+        GLOBAL("Global", null),
+        STAFF("Staff", "alchemist.staff"),
+        ADMIN("Admin", "alchemist.admin")
+    }
+
 }

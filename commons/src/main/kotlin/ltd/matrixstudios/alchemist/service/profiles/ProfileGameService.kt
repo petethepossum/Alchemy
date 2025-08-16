@@ -109,6 +109,13 @@ object ProfileGameService : GeneralizedService {
         }
     }
 
+    fun getFriendProfiles(friendUUIDs: List<UUID>): List<GameProfile> {
+        return friendUUIDs.mapNotNull { uuid ->
+            ProfileGameService.byId(uuid)
+        }
+    }
+
+
     fun save(gameProfile: GameProfile) : CompletableFuture<Void> {
         cache[gameProfile.uuid] = gameProfile
 

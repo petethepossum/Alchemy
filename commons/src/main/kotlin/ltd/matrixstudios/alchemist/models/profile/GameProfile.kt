@@ -53,6 +53,7 @@ data class GameProfile(
     val notes: MutableList<ProfileNote> = ArrayList(),
     var siblings: MutableList<UUID> = ArrayList(),
     var syncCode: String? = null,
+    var playtimeMillis: Long = 0L,
 )
 {
 

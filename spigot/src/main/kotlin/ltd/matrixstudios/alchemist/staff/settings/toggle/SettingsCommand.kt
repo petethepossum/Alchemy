@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 class SettingsCommand : BaseCommand()
 {
 
-    @CommandAlias("tsm|tsc|staffsettings")
+    @CommandAlias("tsm|staffsettings")
     @CommandPermission("alchemist.staff")
     fun settings(player: Player)
     {

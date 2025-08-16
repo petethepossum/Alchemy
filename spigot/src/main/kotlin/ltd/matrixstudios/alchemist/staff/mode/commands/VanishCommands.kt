@@ -9,6 +9,7 @@ import ltd.matrixstudios.alchemist.redis.AsynchronousRedisSender
 import ltd.matrixstudios.alchemist.staff.alerts.StaffActionAlertPacket
 import ltd.matrixstudios.alchemist.staff.mode.StaffSuiteManager
 import ltd.matrixstudios.alchemist.staff.mode.StaffSuiteVisibilityHandler
+import ltd.matrixstudios.alchemist.redis.RedisVanishStatusService
 import ltd.matrixstudios.alchemist.util.Chat
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
@@ -23,12 +24,14 @@ class VanishCommands : BaseCommand()
         if (player.hasMetadata("vanish"))
         {
             player.removeMetadata("vanish", AlchemistSpigotPlugin.instance)
+            RedisVanishStatusService.delVanished(player.uniqueId)
             StaffSuiteVisibilityHandler.onDisableVisbility(player)
             player.sendMessage(Chat.format("&cYou have came out of vanish!"))
             AsynchronousRedisSender.send(StaffActionAlertPacket("has unvanished", player.name, Alchemist.globalServer.id))
         } else
         {
             player.setMetadata("vanish", FixedMetadataValue(AlchemistSpigotPlugin.instance, true))
+            RedisVanishStatusService.setVanished(player.uniqueId)
             StaffSuiteVisibilityHandler.onEnableVisibility(player)
             player.sendMessage(Chat.format("&aYou have entered vanish!"))
             AsynchronousRedisSender.send(StaffActionAlertPacket("has vanished", player.name, Alchemist.globalServer.id))
@@ -41,9 +44,11 @@ class VanishCommands : BaseCommand()
     {
         val modded = StaffSuiteManager.isModMode(player)
         val vanish = player.hasMetadata("vanish")
+        val redisvanish = RedisVanishStatusService.isVanished(player.uniqueId)
 
         player.sendMessage(Chat.format("&6ModMode: &f" + if (modded) "&aYes" else "&cNo"))
         player.sendMessage(Chat.format("&6Vanished: &f" + if (vanish) "&aYes" else "&cNo"))
+        player.sendMessage(Chat.format("&6Visibility: &f" + if (redisvanish) "&eVanished [REDIS]" else "&eVisible [REDIS]"))
         player.sendMessage(Chat.format("&7&oBukkit respects and abides by these values"))
     }
 }

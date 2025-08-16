@@ -24,6 +24,7 @@ object BukkitPostLoginConnection : ConnectionMethod<Player>()
             CheckBanEvasion,
             SendLoadedProfileMessage,
             EnsureTOTP,
+            VanishVisibility,
         ).also {
             if (DisguiseModule.getModularConfigOption())
             {

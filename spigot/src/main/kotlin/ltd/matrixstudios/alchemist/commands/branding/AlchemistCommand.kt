@@ -21,11 +21,11 @@ class AlchemistCommand : BaseCommand()
     fun alchemist(player: Player)
     {
         player.sendMessage(Chat.format("&7&m----------------------------------------"))
-        player.sendMessage(Chat.format("&6&lAlchemist Rank Core"))
+        player.sendMessage(Chat.format("&6&lAlchemy Rank Core"))
         player.sendMessage(Chat.format(" "))
-        player.sendMessage(Chat.format("&eMade By&7: &f98ping"))
+        player.sendMessage(Chat.format("&eOriginal Made By&7: &f98ping, &eForked to Alchemy By&7: &fpetethepossum"))
         player.sendMessage(Chat.format("&eGitHub&7: &fhttps://github.com/98ping/Alchemist"))
-        if (player.name.equals("98ping", ignoreCase = true))
+        if (player.name.equals("petethepossum", ignoreCase = true))
         {
             player.sendMessage(Chat.format("&ePlugin Version: &f" + AlchemistSpigotPlugin.instance.description.version))
         }

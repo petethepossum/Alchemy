@@ -7,7 +7,6 @@ import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import ltd.matrixstudios.website.user.loader.UserServicesComponent
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
-import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -17,11 +16,10 @@ import java.util.*
 import javax.servlet.http.HttpServletRequest
 
 @Controller
-class GameProfileController
-{
+class GameProfileController {
+
     @RequestMapping(value = ["/api/users"], method = [RequestMethod.GET])
-    fun getAllUsers(request: HttpServletRequest): ModelAndView
-    {
+    fun getAllUsers(request: HttpServletRequest): ModelAndView {
         val modelAndView = ModelAndView("user/users")
 
         val profile = request.session.getAttribute("user") as AlchemistUser?
@@ -46,7 +44,7 @@ class GameProfileController
     fun onLookupProfile(
         @PathVariable id: String,
         request: HttpServletRequest
-    ) : ModelAndView {
+    ): ModelAndView {
         val modelAndView = ModelAndView("user/user-lookup")
 
         val profile = request.session.getAttribute("user") as AlchemistUser?
@@ -62,13 +60,17 @@ class GameProfileController
                 "The user requested does not exist. Please ensure that the UUID is correct!"
             )
 
-        val decoyProfile = GameProfile(UUID.fromString("401202a3-0102-4ed8-979a-e5d4832c8a9b"), "itsjhalt", "itsjhalt", JsonObject(), "12", arrayListOf(), arrayListOf(), null, null, null, arrayListOf(), System.currentTimeMillis())
+        val friends = getFriendProfiles(found.friends)
 
         modelAndView.addObject("target", found)
-        modelAndView.addObject("page", 1)
-        modelAndView.addObject("users", listOf(decoyProfile, decoyProfile, decoyProfile, decoyProfile, decoyProfile, decoyProfile, decoyProfile, decoyProfile, decoyProfile, decoyProfile))
+        modelAndView.addObject("users", friends)
         modelAndView.addObject("section", "userLookup")
+        modelAndView.addObject("page", 1)
 
         return modelAndView
+    }
+
+    private fun getFriendProfiles(friendUUIDs: List<UUID>): List<GameProfile> {
+        return friendUUIDs.mapNotNull { ProfileGameService.byId(it) }
     }
 }

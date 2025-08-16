@@ -23,6 +23,7 @@ object EssentialsModule : PluginModule
         commands.add(WorldCommands())
         commands.add(RegenerativeCommands())
         commands.add(ClearInventoryCommand())
+        commands.add(TimeCommand())
         commands.add(CraftCommand())
 
         commands.add(KillCommand())

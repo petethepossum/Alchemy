@@ -32,4 +32,23 @@ object StaffSuiteVisibilityHandler
             }
         }
     }
+    fun applyVisibilityForJoiningPlayer(joiningPlayer: Player) {
+        val vanishedPlayers = Bukkit.getOnlinePlayers().filter { it.hasMetadata("vanish") }
+
+        if (joiningPlayer.hasPermission("alchemist.staff")) {
+            val profile = AlchemistAPI.syncFindProfile(joiningPlayer.uniqueId)
+            val canSeeOtherStaff = profile?.hasMetadata("seeOtherStaff") ?: false
+
+            if (canSeeOtherStaff) {
+                // Show all vanished staff to this player
+                vanishedPlayers.forEach { joiningPlayer.showPlayer(it) }
+            } else {
+                // Hide all vanished staff from this player
+                vanishedPlayers.forEach { joiningPlayer.hidePlayer(it) }
+            }
+        } else {
+            // Non-staff never see vanished players
+            vanishedPlayers.forEach { joiningPlayer.hidePlayer(it) }
+        }
+    }
 }
