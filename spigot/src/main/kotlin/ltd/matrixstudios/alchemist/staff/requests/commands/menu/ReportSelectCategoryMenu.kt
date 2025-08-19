@@ -54,7 +54,7 @@ override fun getButtons(player: Player): MutableMap<Int, Button> {
         2,
         Material.BOOK,
         "&eCurrent Server",
-        listOf("&7View reports from your current server, {$Alchemist.globalServer.displayName}"),
+        listOf("&7View reports from your current server, ${Alchemist.globalServer.displayName}"),
         { it.server.equals(Alchemist.globalServer.displayName, ignoreCase = true) }
     )
 

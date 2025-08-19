@@ -51,6 +51,9 @@ import ltd.matrixstudios.alchemist.queue.command.ModifyQueueCommands
 import ltd.matrixstudios.alchemist.queue.command.QueueCommands
 import ltd.matrixstudios.alchemist.redis.command.RedisCommand
 import ltd.matrixstudios.alchemist.servers.commands.BroadcastCommand
+import ltd.matrixstudios.alchemist.service.reports.ReportService
+import ltd.matrixstudios.alchemist.models.report.ReportModel
+import ltd.matrixstudios.alchemist.service.expirable.PunishmentService
 import ltd.matrixstudios.alchemist.staff.requests.commands.ReportCommand
 import ltd.matrixstudios.alchemist.themes.commands.ThemeSelectCommand
 import org.bukkit.Bukkit
@@ -78,6 +81,16 @@ object ACFCommandController
             this.commandCompletions.registerCompletion("gameprofile") {
                 return@registerCompletion AlchemistSpigotPlugin.instance.server.onlinePlayers.map { it.name }.toList()
             }
+            this.commandCompletions.registerCompletion("reportIds") {
+                return@registerCompletion ReportService.getAll().get()
+                    .map { it.numericId.toString() }
+            }
+            this.commandCompletions.registerCompletion("punishmentIds") {
+                return@registerCompletion PunishmentService.getValues()
+                    .get()
+                    .mapNotNull { it.easyFindId }
+            }
+
 
             this.enableUnstableAPI("help")
 

@@ -12,6 +12,9 @@ import ltd.matrixstudios.alchemist.staff.mode.commands.StaffCommands
 import ltd.matrixstudios.alchemist.staff.mode.commands.VanishCommands
 import ltd.matrixstudios.alchemist.staff.requests.commands.ReportCommand
 import ltd.matrixstudios.alchemist.staff.settings.edit.EditModModeCommand
+import ltd.matrixstudios.alchemist.staff.requests.commands.ReportCloseCommand
+import ltd.matrixstudios.alchemist.staff.requests.commands.ReportHandleCommand
+import ltd.matrixstudios.alchemist.staff.requests.commands.ReportInfoCommand
 
 
 /**

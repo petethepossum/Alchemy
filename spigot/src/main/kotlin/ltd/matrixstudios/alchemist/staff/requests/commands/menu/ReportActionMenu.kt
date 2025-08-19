@@ -36,7 +36,7 @@ class ReportActionMenu(val player: Player, val report: ReportModel) : Menu(playe
     override fun getTitle(player: Player): String {
         val status = formatStatus(report.status)
         return if (report.handledBy == player.uniqueId) {
-            "§lHandling Report #${report.numericId} §7[$status]"
+            "§oHandling Report #${report.numericId} §7[$status§7]"
         } else {
             "Report #${report.numericId} §7[$status]"
         }
@@ -81,7 +81,7 @@ class ReportActionMenu(val player: Player, val report: ReportModel) : Menu(playe
             0
         ).setBody { _, _, _ -> }
 
-        buttons[11] = SimpleActionButton(
+        buttons[10] = SimpleActionButton(
             Material.EMERALD,
             mutableListOf(
                 Chat.format("&7Cycle report status"),
@@ -101,9 +101,9 @@ class ReportActionMenu(val player: Player, val report: ReportModel) : Menu(playe
             openMenu()
         }
 
-        buttons[13] = handlerButton
+        buttons[12] = handlerButton
 
-        buttons[15] = SimpleActionButton(
+        buttons[14] = SimpleActionButton(
             Material.BOOK_AND_QUILL,
             mutableListOf(Chat.format("&7Add a note or comment to this report")),
             "&eAdd Note",
@@ -119,7 +119,7 @@ class ReportActionMenu(val player: Player, val report: ReportModel) : Menu(playe
                 }.start(player)
         }
 
-        buttons[17] = SimpleActionButton(
+        buttons[16] = SimpleActionButton(
             Material.CHEST,
             report.notes.mapIndexed { i, note -> Chat.format("&7${i + 1}. $note") }.take(5).toMutableList(),
             "&6View Notes",

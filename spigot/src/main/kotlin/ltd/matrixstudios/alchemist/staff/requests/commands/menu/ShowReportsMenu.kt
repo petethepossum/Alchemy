@@ -19,7 +19,7 @@ import java.util.*
 class ShowReportsMenu(
     val player: Player,
     val allReports: MutableList<ReportModel>,
-    var showArchived: Boolean = false
+    var showArchived: Boolean = true
 ) : BorderedPaginatedMenu(player) {
 
     override fun getTitle(player: Player): String {
@@ -71,7 +71,7 @@ class ShowReportsMenu(
         override fun getButtonItem(player: Player): ItemStack {
             val item = ItemStack(getMaterial(player))
             val meta = item.itemMeta
-            meta?.setDisplayName(getDisplayName(player))
+            meta?.displayName = getDisplayName(player)
             meta?.lore = getDescription(player)
             if (model.isArchived) {
                 meta?.addEnchant(Enchantment.DURABILITY, 1, true)

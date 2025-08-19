@@ -3,6 +3,7 @@ package ltd.matrixstudios.alchemist.service.reports
 import ltd.matrixstudios.alchemist.Alchemist
 import ltd.matrixstudios.alchemist.models.report.ReportModel
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
+import ltd.matrixstudios.alchemist.service.reports.ReportService.getAll
 import org.bson.Document
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -68,12 +69,12 @@ object ReportService {
         cache.clear()
     }
 }
+//TODO make it work across networks, not just single server, it "works" but could be better also getting all for ids on every report call is bad lol, maybe store in redis idk
 object ReportIdService {
-    private var lastId: Int = 1000 // start from 1000 or load from DB
+    private var lastId: Int = getAll().get().maxOfOrNull { it.numericId } ?: 0
 
     fun nextId(): Int {
         lastId += 1
-        // optionally persist lastId here
         return lastId
     }
 }

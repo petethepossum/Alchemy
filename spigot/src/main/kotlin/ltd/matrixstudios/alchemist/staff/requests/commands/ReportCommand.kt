@@ -64,7 +64,7 @@ class ReportCommand : BaseCommand() {
 
         AsynchronousRedisSender.send(
             ReportPacket(
-                "&9[Report] &7[$currentServer] &b$display &7has reported &f$otherDisplay\n     &9Reason: &7$reason+\n &9Status: &7$report.status",
+                "&9[Report] &7[$currentServer] &b$display &breported &f$otherDisplay\n &bfor &c$reason",
                 report
             )
         )
@@ -86,6 +86,6 @@ class ReportCommand : BaseCommand() {
     {
         ReportSelectCategoryMenu(player).openMenu()
     }
-//TODO REGISTER THIS CMD
+
 
 }

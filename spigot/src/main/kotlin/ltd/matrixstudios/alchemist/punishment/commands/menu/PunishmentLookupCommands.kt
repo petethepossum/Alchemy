@@ -2,6 +2,7 @@ package ltd.matrixstudios.alchemist.punishment.commands.menu
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Name
 import ltd.matrixstudios.alchemist.api.AlchemistAPI
@@ -17,6 +18,7 @@ class PunishmentLookupCommands : BaseCommand()
 
     @CommandAlias("punishmentlookup|plookup")
     @CommandPermission("alchemist.punishments.lookup")
+    @CommandCompletion("@punishmentIds")
     fun lookup(player: Player, @Name("punishmentId") id: String)
     {
         val punishment = PunishmentService.searchFromId(id)
