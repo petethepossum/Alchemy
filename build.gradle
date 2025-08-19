@@ -8,7 +8,7 @@ plugins {
 
 allprojects {
     group 'ltd.matrixstudios'
-    version '1.23-ALCHEMY'
+    version '1.24-ALCHEMY'
 
     repositories {
         mavenCentral()

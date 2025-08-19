@@ -10,6 +10,7 @@ import ltd.matrixstudios.alchemist.staff.mode.action.TestActionBarCommand
 import ltd.matrixstudios.alchemist.staff.mode.commands.FreezeCommand
 import ltd.matrixstudios.alchemist.staff.mode.commands.StaffCommands
 import ltd.matrixstudios.alchemist.staff.mode.commands.VanishCommands
+import ltd.matrixstudios.alchemist.staff.requests.commands.ReportCommand
 import ltd.matrixstudios.alchemist.staff.settings.edit.EditModModeCommand
 
 
@@ -35,6 +36,11 @@ object StaffModeModule : PluginModule
         list.add(StaffCommands())
         list.add(VanishCommands())
         list.add(TestActionBarCommand())
+        list.add(ReportCommand())
+        list.add(ReportHandleCommand())
+        list.add(ReportInfoCommand())
+        list.add(ReportCloseCommand())
+
 
         list.add(EditModModeCommand())
 

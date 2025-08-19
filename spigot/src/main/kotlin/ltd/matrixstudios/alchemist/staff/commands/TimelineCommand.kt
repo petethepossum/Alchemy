@@ -22,7 +22,7 @@ class TimelineCommand : BaseCommand()
         val grants = RankGrantService.getFromCache(profile.uuid).filter { it.getGrantable().staff }
             .sortedByDescending { System.currentTimeMillis().minus(it.expirable.addedAt) }
         val alreadyShownRanks = mutableListOf<Rank>()
-        val dateFormat = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
         var barMessage = "&7█"
 
         player.sendMessage(Chat.format("&7&m------------------------"))

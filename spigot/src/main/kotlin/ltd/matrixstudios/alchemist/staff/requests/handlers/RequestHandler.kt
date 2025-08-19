@@ -1,7 +1,7 @@
 package ltd.matrixstudios.alchemist.staff.requests.handlers
 
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
-import ltd.matrixstudios.alchemist.staff.requests.report.ReportModel
+import ltd.matrixstudios.alchemist.models.report.ReportModel
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.TimeUnit

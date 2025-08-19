@@ -35,25 +35,31 @@ class MMCNew : Theme(
     0
 ) {
 
-    // Maps chat color codes to XMaterial wool
-    private fun getWoolFromChatColor(color: String): XMaterial = when (color.lowercase()) {
-        "&c" -> XMaterial.RED_WOOL
-        "&a" -> XMaterial.LIME_WOOL
-        "&b" -> XMaterial.LIGHT_BLUE_WOOL
-        "&9" -> XMaterial.BLUE_WOOL
-        "&e" -> XMaterial.YELLOW_WOOL
-        "&6" -> XMaterial.ORANGE_WOOL
-        "&d" -> XMaterial.MAGENTA_WOOL
-        "&f" -> XMaterial.WHITE_WOOL
-        "&7" -> XMaterial.LIGHT_GRAY_WOOL
-        "&8" -> XMaterial.GRAY_WOOL
-        "&0" -> XMaterial.BLACK_WOOL
-        "&5" -> XMaterial.PURPLE_WOOL
-        "&3" -> XMaterial.CYAN_WOOL
-        "&2" -> XMaterial.GREEN_WOOL
-        "&1" -> XMaterial.BLUE_WOOL
-        "&4" -> XMaterial.RED_WOOL
-        else -> XMaterial.WHITE_WOOL
+    /**
+     * Map a Minecraft chat color code (&a, &e, etc.) to its closest wool XMaterial.
+     * Works regardless of upper/lowercase (&E, &e).
+     */
+    private fun getWoolFromChatColor(code: String): XMaterial {
+        val key = code.trim().removePrefix("&").lowercase(Locale.ROOT).firstOrNull() ?: 'f'
+        return when (ChatColor.getByChar(key)) {
+            ChatColor.BLACK -> XMaterial.BLACK_WOOL
+            ChatColor.DARK_BLUE -> XMaterial.BLUE_WOOL          // &1
+            ChatColor.DARK_GREEN -> XMaterial.GREEN_WOOL         // &2
+            ChatColor.DARK_AQUA -> XMaterial.CYAN_WOOL           // &3
+            ChatColor.DARK_RED -> XMaterial.RED_WOOL             // &4
+            ChatColor.DARK_PURPLE -> XMaterial.PURPLE_WOOL       // &5
+            ChatColor.GOLD -> XMaterial.ORANGE_WOOL              // &6
+            ChatColor.GRAY -> XMaterial.LIGHT_GRAY_WOOL          // &7
+            ChatColor.DARK_GRAY -> XMaterial.GRAY_WOOL           // &8
+            ChatColor.BLUE -> XMaterial.BLUE_WOOL                // &9
+            ChatColor.GREEN -> XMaterial.LIME_WOOL               // &a
+            ChatColor.AQUA -> XMaterial.LIGHT_BLUE_WOOL          // &b
+            ChatColor.RED -> XMaterial.RED_WOOL                  // &c
+            ChatColor.LIGHT_PURPLE -> XMaterial.MAGENTA_WOOL     // &d
+            ChatColor.YELLOW -> XMaterial.YELLOW_WOOL            // &e
+            ChatColor.WHITE -> XMaterial.WHITE_WOOL              // &f
+            else -> XMaterial.WHITE_WOOL
+        }
     }
 
     override fun getGrantsLore(player: Player, rankGrant: RankGrant): MutableList<String> {
@@ -86,14 +92,12 @@ class MMCNew : Theme(
             desc.add(Chat.format("&eRemoved Reason: &f" + (rankGrant.removedReason ?: "Unknown")))
             desc.add(Chat.format("&d&m                                                                        "))
         }
-        if (!player.hasPermission("alchemist.grants.remove") && rankGrant.getGrantable().weight >= (AlchemistAPI.syncFindProfile(player.uniqueId)?.getCurrentRank()?.weight
-                ?: 0)
-        ) {
+        val selfWeight = AlchemistAPI.syncFindProfile(player.uniqueId)?.getCurrentRank()?.weight ?: 0
+        if (!player.hasPermission("alchemist.grants.remove") && rankGrant.getGrantable().weight >= selfWeight) {
             desc.add(Chat.format("&cYou don't have permission to remove this grant"))
         } else if (player.hasPermission("alchemist.grants.remove")) {
             desc.add(Chat.format("&aRight-Click to remove this grant from &r" + AlchemistAPI.getRankDisplay(rankGrant.target)))
         }
-
         if (player.hasPermission("alchemist.grants.scopes.audit")) {
             desc.add(Chat.format("&aLeft-Click to edit the scopes of this grant"))
         }
@@ -102,13 +106,17 @@ class MMCNew : Theme(
     }
 
     override fun getGrantsDisplayName(player: Player, rankGrant: RankGrant): String {
-        return Chat.format((if (rankGrant.expirable.isActive()) "&a&l(Active) &a+ " else "&c&l(Inactive) &c") + Date(rankGrant.expirable.addedAt))
+        return Chat.format(
+            (if (rankGrant.expirable.isActive()) "&a&l(Active) &a+ " else "&c&l(Inactive) &c") +
+                    Date(rankGrant.expirable.addedAt)
+        )
     }
 
     override fun getGrantsData(player: Player, rankGrant: RankGrant): Short {
         return when {
             rankGrant.expirable.isActive() -> XMaterial.LIME_WOOL.data.toShort()
-            rankGrant.expirable.duration != Long.MAX_VALUE && rankGrant.removedReason.equals("Expired", ignoreCase = true) -> XMaterial.GRAY_WOOL.data.toShort()
+            rankGrant.expirable.duration != Long.MAX_VALUE &&
+                    rankGrant.removedReason.equals("Expired", ignoreCase = true) -> XMaterial.GRAY_WOOL.data.toShort()
             else -> XMaterial.RED_WOOL.data.toShort()
         }
     }
@@ -142,8 +150,8 @@ class MMCNew : Theme(
     }
 
     override fun getGrantData(player: Player, rank: Rank): Short {
-        return rank.woolColor?.let { XMaterial.valueOf("${it.uppercase()}_WOOL").data.toShort() }
-            ?: getWoolFromChatColor(rank.color).data.toShort()
+        // Wool color is stored as a chat color code (e.g. "&e"). Never call XMaterial.valueOf on it.
+        return getWoolFromChatColor(rank.woolColor ?: rank.color).data.toShort()
     }
 
     override fun getHistoryLore(player: Player, punishment: Punishment): MutableList<String> {
@@ -174,25 +182,37 @@ class MMCNew : Theme(
     }
 
     override fun getHistoryDisplayName(player: Player, punishment: Punishment): String {
-        return Chat.format((if (punishment.expirable.isActive()) "&a&l(Active) &a+ " else "&c&l(Inactive) &c") + Date(punishment.expirable.addedAt).toString())
+        return Chat.format(
+            (if (punishment.expirable.isActive()) "&a&l(Active) &a+ " else "&c&l(Inactive) &c") +
+                    Date(punishment.expirable.addedAt).toString()
+        )
     }
 
     override fun getHistoryData(player: Player, punishment: Punishment): Short {
-        return if (punishment.expirable.isActive()) XMaterial.LIME_WOOL.data.toShort() else XMaterial.RED_WOOL.data.toShort()
+        return if (punishment.expirable.isActive())
+            XMaterial.LIME_WOOL.data.toShort()
+        else
+            XMaterial.RED_WOOL.data.toShort()
     }
 
-    override fun getHistoryPlaceholderLore(player: Player, profile: GameProfile, punishment: PunishmentType): MutableList<String> {
+    override fun getHistoryPlaceholderLore(
+        player: Player,
+        profile: GameProfile,
+        punishment: PunishmentType
+    ): MutableList<String> {
         val desc = arrayListOf<String>()
         val punishments = profile.getPunishments(punishment)
-        desc.addAll(listOf(
-            "&fClick to view this category",
-            "&fof punishment",
-            "",
-            " &eTotal: &f${punishments.size}",
-            " &aActive: &f${punishments.count { it.expirable.isActive() }}",
-            " &cInactive: &f${punishments.count { !it.expirable.isActive() }}",
-            ""
-        ))
+        desc.addAll(
+            listOf(
+                "&fClick to view this category",
+                "&fof punishment",
+                "",
+                " &eTotal: &f${punishments.size}",
+                " &aActive: &f${punishments.count { it.expirable.isActive() }}",
+                " &cInactive: &f${punishments.count { !it.expirable.isActive() }}",
+                ""
+            )
+        )
         return desc
     }
 

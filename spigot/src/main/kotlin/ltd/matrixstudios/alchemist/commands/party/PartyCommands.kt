@@ -159,7 +159,6 @@ class PartyCommands : BaseCommand()
                 throw ConditionFailedException("&cYou are already in a party! Use &e/party leave &cto leave your current one.")
             }
 
-            // Expiry check (optional, 5 mins example)
             val inviteTime = targetParty.invited[player.uniqueId]!!
             val currentTime = System.currentTimeMillis()
             if (currentTime - inviteTime > (5 * 60 * 1000)) {

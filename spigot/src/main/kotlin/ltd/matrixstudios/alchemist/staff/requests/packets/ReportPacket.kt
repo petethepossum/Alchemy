@@ -3,7 +3,7 @@ package ltd.matrixstudios.alchemist.staff.requests.packets
 
 import ltd.matrixstudios.alchemist.redis.RedisPacket
 import ltd.matrixstudios.alchemist.staff.requests.handlers.RequestHandler
-import ltd.matrixstudios.alchemist.staff.requests.report.ReportModel
+import ltd.matrixstudios.alchemist.models.report.ReportModel
 import ltd.matrixstudios.alchemist.util.Chat
 import org.bukkit.Bukkit
 
