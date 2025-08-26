@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.Name
 import ltd.matrixstudios.alchemist.AlchemistSpigotPlugin
 import ltd.matrixstudios.alchemist.api.AlchemistAPI
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
+import ltd.matrixstudios.alchemist.redis.RedisOnlineStatusService
 import ltd.matrixstudios.alchemist.util.Chat
 import ltd.matrixstudios.alchemist.util.TimeUtil
 import org.bukkit.Bukkit
@@ -30,10 +31,11 @@ class LookupCommand : BaseCommand()
             override fun run()
             {
                 val serverFromProfile = gameProfile.metadata.get("server")
+                val serverFromRedis = RedisOnlineStatusService.getOnlineServer(gameProfile.uuid) //is stored as string
 
                 if (serverFromProfile != null && !serverFromProfile.asString.equals("None", ignoreCase = true))
                 {
-                    player.sendMessage(Chat.format(AlchemistAPI.getRankDisplay(gameProfile.uuid) + " &ewas found on &f${serverFromProfile.asString}"))
+                    player.sendMessage(Chat.format(AlchemistAPI.getRankDisplay(gameProfile.uuid) + " &ewas found on &f${serverFromRedis} &fMongo: ${serverFromProfile.asString}"))
                 } else
                 {
                     player.sendMessage(

@@ -4,6 +4,8 @@ import co.aikar.commands.BaseCommand
 import ltd.matrixstudios.alchemist.AlchemistSpigotPlugin
 import ltd.matrixstudios.alchemist.chat.commands.ChatCommands
 import ltd.matrixstudios.alchemist.module.PluginModule
+import ltd.matrixstudios.alchemist.profiles.getProfile
+import org.bukkit.entity.Player
 
 object ChatModule : PluginModule
 {
@@ -20,6 +22,24 @@ object ChatModule : PluginModule
 
         return list
     }
+    fun getChatChannelForPlayer(player: Player): ChatMode {
+        val profile = player.getProfile() ?: return ChatMode.GLOBAL
+        val channel = profile.metadata.get("chat-channel")?.asString ?: "global"
+
+        return when (channel.lowercase()) {
+            "global" -> ChatMode.GLOBAL
+            "staff" -> ChatMode.STAFF
+            "admin" -> ChatMode.ADMIN
+            else -> ChatMode.GLOBAL
+        }
+    }
+
+    fun getColoredChatChannel(player: Player): String {
+        val mode = getChatChannelForPlayer(player)
+        return "${mode.displayColour}${mode.displayName}"
+    }
+
+
 
     override fun getModularConfigOption(): Boolean
     {

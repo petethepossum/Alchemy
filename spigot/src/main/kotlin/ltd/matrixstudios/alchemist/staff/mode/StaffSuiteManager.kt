@@ -5,6 +5,7 @@ import ltd.matrixstudios.alchemist.client.LunarClientExtension
 import ltd.matrixstudios.alchemist.client.feature.NameTagFeature
 import ltd.matrixstudios.alchemist.client.feature.TeamViewFeature
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
+import ltd.matrixstudios.alchemist.staff.mode.StaffItems
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack

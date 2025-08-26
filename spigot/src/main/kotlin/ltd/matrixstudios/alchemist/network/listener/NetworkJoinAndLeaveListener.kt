@@ -24,6 +24,7 @@ class NetworkJoinAndLeaveListener : Listener {
         profile.metadata.addProperty("server", Alchemist.globalServer.id)
         RedisOnlineStatusService.markOnline(profile.uuid, Alchemist.globalServer.id)
         profile.lastSeenAt = System.currentTimeMillis()
+        profile.updateLoginTimes(System.currentTimeMillis())
 
         // Store the session start time
         sessionStart[e.uniqueId] = System.currentTimeMillis()

@@ -3,11 +3,14 @@ package ltd.matrixstudios.alchemist.commands.alts.menu
 import ltd.matrixstudios.alchemist.api.AlchemistAPI
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
 import ltd.matrixstudios.alchemist.util.Chat
+import ltd.matrixstudios.alchemist.util.items.ItemBuilder
 import ltd.matrixstudios.alchemist.util.menu.Button
 import ltd.matrixstudios.alchemist.util.menu.pagination.PaginatedMenu
+import ltd.matrixstudios.alchemist.util.skull.SkullUtil
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
+import org.bukkit.inventory.ItemStack
 import java.util.*
 
 class AltsMenu(var player: Player, var target: GameProfile, var alts: MutableList<GameProfile>) :
@@ -73,9 +76,11 @@ class AltsMenu(var player: Player, var target: GameProfile, var alts: MutableLis
             desc.add(Chat.format("&6&m-------------------------------"))
             desc.add(Chat.format(AlchemistAPI.getRankDisplay(gameProfile.uuid) + "&e's Current IP data:"))
             desc.add(Chat.format("  &eLast Login: &f" + Date(gameProfile.lastSeenAt)))
+            desc.add(Chat.format("  &eFirst Login: &f" + gameProfile.getFormattedFirstLogin()))
             desc.add(" ")
             desc.add(Chat.format(AlchemistAPI.getRankDisplay(target.uuid) + "&e's Current IP data:"))
             desc.add(Chat.format("  &eLast Login: &f" + Date(target.lastSeenAt)))
+            desc.add(Chat.format("  &eFirst Login: &f" + target.getFormattedFirstLogin()))
 
             return desc
         }
@@ -89,10 +94,24 @@ class AltsMenu(var player: Player, var target: GameProfile, var alts: MutableLis
         {
             return 3
         }
+        override fun getButtonItem(player: Player): ItemStack {
+            val name = getDisplayName(player)
+            val lore = getDescription(player)
+            val skullItem = SkullUtil.generate(gameProfile.username, name)
+            return ItemBuilder.copyOf(skullItem)
+                .name(name)
+                .setLore(lore)
+                .build()
+        }
 
         override fun onClick(player: Player, slot: Int, type: ClickType)
         {
-
+            if (type.isLeftClick) {
+                player.performCommand("useradmin info ${gameProfile.username}")
+            }
+            else if (type.isRightClick) {
+                player.performCommand("c ${gameProfile.username}")
+            }
         }
 
     }

@@ -145,7 +145,9 @@ object ProfileGameService : GeneralizedService {
                 null,
                 null,
                 mutableListOf(),
-                System.currentTimeMillis()
+                System.currentTimeMillis(),
+                firstLoginAt = System.currentTimeMillis(),
+                lastLoginAt = System.currentTimeMillis()
             )
     }
 }

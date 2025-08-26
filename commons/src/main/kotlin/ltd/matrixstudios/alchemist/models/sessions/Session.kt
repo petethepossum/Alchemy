@@ -9,5 +9,6 @@ data class Session(
 
     var serversJoined: MutableMap<Long, UniqueServer>,
     var loggedInAt: Long,
-    var leftAt: Long,
+    var leftAt: Long = 0L,
+    var lastHeartbeat: Long = System.currentTimeMillis()
 )

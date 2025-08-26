@@ -1,5 +1,6 @@
 package ltd.matrixstudios.alchemist.placeholder
 
+import ltd.matrixstudios.alchemist.chat.ChatModule
 import ltd.matrixstudios.alchemist.models.ranks.Rank
 import ltd.matrixstudios.alchemist.profiles.getCurrentRank
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
@@ -80,15 +81,36 @@ class AlchemistExpansion : PlaceholderExpansion()
                 return profile.friends.size.toString()
             }
 
-          //  "OnlineFriends" -> {
-           //TODO //    return profile.friends.filter { it.isOnline() }.size.toString()
-           // }
+        //    "OnlineFriends" -> {
+          //     return profile.friends.filter { it.isOnline() }.size.toString()
+          //  }
 
             "modModeStatus" ->
             {
                 if (StaffSuiteManager.isModMode(player)) return "&aYes"
 
                 return "&cNo"
+            }
+
+            "modModeDisplay" ->
+            {
+                if (StaffSuiteManager.isModMode(player)) return "&f* &eMod Mode: &5On"
+                return ""
+            }
+            "vanishStatusDisplay" ->
+            {
+                if (StaffSuiteManager.isModMode(player)) return "&f* &aVanish Status: ${if (player.hasMetadata("vanish")) "&dEnabled" else "&cDisabled"}\n&f* &aChat Channel: &d${ChatModule.getColoredChatChannel(player)}"
+                return ""
+            }
+            "chatChannelDisplay" ->
+            {
+                if (StaffSuiteManager.isModMode(player)) return "&f* &aChat Channel: &d${ChatModule.getColoredChatChannel(player)}"
+                return ""
+            }
+
+            "chatChannel" ->
+            {
+             return ChatModule.getColoredChatChannel(player)
             }
 
             "nametagPrefix" ->

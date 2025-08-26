@@ -6,6 +6,7 @@ import ltd.matrixstudios.alchemist.AlchemistBungee
 import ltd.matrixstudios.alchemist.lockdown.LockdownManager
 import ltd.matrixstudios.alchemist.packets.StaffMessagePacket
 import ltd.matrixstudios.alchemist.redis.BungeeRedisSender
+import ltd.matrixstudios.alchemist.redis.RedisOnlineStatusService
 import ltd.matrixstudios.alchemist.service.expirable.RankGrantService
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import net.md_5.bungee.api.ChatColor
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit
 //I am going to do something with redis in the future but this is just a quick solution
 class BungeeListener : Listener {
 
+
     @EventHandler
     fun switch(event: ServerSwitchEvent) {
         val player = event.player.uniqueId
@@ -32,6 +34,7 @@ class BungeeListener : Listener {
             if (playerRank.staff && event.from != null) {
                 StaffMessagePacket("&b[S] &r" + playerRank.color + event.player.name + " &3joined &b" + event.player.server.info.name + " &3from &b" + event.from.name).action()
             }
+            RedisOnlineStatusService.updateOnlineServer(player, event.player.server.info.name)
         }, 100L, TimeUnit.MILLISECONDS)
     }
 

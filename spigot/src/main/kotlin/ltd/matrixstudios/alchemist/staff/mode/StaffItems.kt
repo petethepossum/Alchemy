@@ -1,6 +1,7 @@
 package ltd.matrixstudios.alchemist.staff.mode
 
 import ltd.matrixstudios.alchemist.redis.RedisPacketManager
+import com.cryptomorin.xseries.XMaterial
 import ltd.matrixstudios.alchemist.serialize.type.ItemStackAdapter
 import ltd.matrixstudios.alchemist.util.Chat
 import ltd.matrixstudios.alchemist.util.items.ItemBuilder
@@ -12,16 +13,16 @@ import org.bukkit.entity.Player
 object StaffItems
 {
 
-    val COMPASS = ItemBuilder.of(Material.COMPASS).name("&bCompass").build()
-    val INVENTORY_INSPECT = ItemBuilder.of(Material.BOOK).name("&bInspect Inventory").build()
-    val RANDOMTP = ItemBuilder.of(Material.BEACON).name("&bRandom TP").build()
-    val WORLDEDIT_AXE = ItemBuilder.of(Material.WOOD_AXE).name("&bWorldedit Axe").build()
-    val BETTER_VIEW = ItemBuilder.of(Material.CARPET).data(7).name("&bBetter view").build()
-    val VANISH = ItemBuilder.of(Material.INK_SACK).data(8).name("&bUnvanish").build()
-    val UNVANISH = ItemBuilder.of(Material.INK_SACK).data(10).name("&bVanish").build()
-    val FREEZE = ItemBuilder.of(Material.ICE).name("&bFreeze Player").build()
-    val LAST_PVP = ItemBuilder.of(Material.EMERALD).name("&bLast PvP").build()
-    val EDIT_MOD_MODE = ItemBuilder.of(Material.EMERALD).name(Chat.format("&a&lEdit Mod Mode")).build()
+    val COMPASS = ItemBuilder.of(XMaterial.COMPASS.parseMaterial()!!).name("&bCompass").build()
+    val INVENTORY_INSPECT = ItemBuilder.of(XMaterial.BOOK.parseMaterial()!!).name("&bInspect Inventory").build()
+    val RANDOMTP = ItemBuilder.of(XMaterial.BEACON.parseMaterial()!!).name("&bRandom TP").build()
+    val WORLDEDIT_AXE = ItemBuilder.of(XMaterial.WOODEN_AXE.parseMaterial()!!).name("&bWorldedit Axe").build()
+    val BETTER_VIEW = ItemBuilder.of(XMaterial.GRAY_CARPET.parseMaterial()!!).name("&bBetter View").build()
+    val VANISH = ItemBuilder.of(XMaterial.GRAY_DYE.parseMaterial()!!).name("&bUnvanish").build()
+    val UNVANISH = ItemBuilder.of(XMaterial.LIME_DYE.parseMaterial()!!).name("&bVanish").build()
+    val FREEZE = ItemBuilder.of(XMaterial.ICE.parseMaterial()!!).name("&bFreeze Player").build()
+    val LAST_PVP = ItemBuilder.of(XMaterial.EMERALD.parseMaterial()!!).name("&bLast PvP").build()
+    val EDIT_MOD_MODE = ItemBuilder.of(XMaterial.EMERALD.parseMaterial()!!).name(Chat.format("&a&lEdit Mod Mode")).build()
 
     val ITEMS_IN_LIST = listOf(
         COMPASS,

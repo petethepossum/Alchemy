@@ -41,6 +41,14 @@ class ItemBuilder(private val item: ItemStack)
         return this
     }
 
+    fun glow(): ItemBuilder {
+        val meta = item.itemMeta
+        meta?.addEnchant(Enchantment.ARROW_DAMAGE, 1, true)
+        meta?.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        item.itemMeta = meta
+        return this
+    }
+
     fun name(displayName: String?): ItemBuilder
     {
         val meta = item.itemMeta

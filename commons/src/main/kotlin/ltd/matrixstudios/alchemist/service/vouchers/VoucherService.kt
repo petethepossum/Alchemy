@@ -1,7 +1,6 @@
 package ltd.matrixstudios.alchemist.service.vouchers
 
 import com.mongodb.client.MongoCollection
-import io.github.nosequel.data.DataStoreType
 import ltd.matrixstudios.alchemist.Alchemist
 import ltd.matrixstudios.alchemist.models.vouchers.VoucherGrant
 import ltd.matrixstudios.alchemist.models.vouchers.VoucherTemplate
@@ -15,16 +14,15 @@ object VoucherService : GeneralizedService {
     val voucherGrants: ConcurrentHashMap<UUID, MutableList<VoucherGrant>> = ConcurrentHashMap()
     val voucherTemplates: ConcurrentHashMap<String, VoucherTemplate> = ConcurrentHashMap()
 
-    val handler = Alchemist.dataHandler.createStoreType<UUID, VoucherGrant>(Alchemist.getDataStoreMethod())
+    val handler = Alchemist.dataHandler.createStoreType<String, VoucherGrant>(Alchemist.getDataStoreMethod())
     val handlerTemplates = Alchemist.dataHandler.createStoreType<String, VoucherTemplate>(Alchemist.getDataStoreMethod())
 
     val collection: MongoCollection<Document> = Alchemist.MongoConnectionPool.getCollection("vouchergrant")
 
     fun loadVoucherGrants() {
-        val items = handler.retrieveAllAsync().thenAccept { voucherCollection ->
+        handler.retrieveAllAsync().thenAccept { voucherCollection ->
             for (voucher in voucherCollection) {
-                val list = (voucherGrants.getOrDefault(voucher.givenTo, mutableListOf())).also { it.add(voucher) }
-
+                val list = voucherGrants.getOrDefault(voucher.givenTo, mutableListOf()).also { it.add(voucher) }
                 voucherGrants[voucher.givenTo] = list
             }
         }
@@ -38,12 +36,8 @@ object VoucherService : GeneralizedService {
         }
     }
 
-    fun findVoucherTemplate(id: String) : VoucherTemplate? {
-        if (voucherTemplates.containsKey(id)) {
-            return voucherTemplates[id]!!
-        }
-
-        return handlerTemplates.retrieve(id)
+    fun findVoucherTemplate(id: String): VoucherTemplate? {
+        return voucherTemplates[id] ?: handlerTemplates.retrieve(id)
     }
 
     fun insertTemplate(voucherTemplate: VoucherTemplate) {
@@ -52,19 +46,20 @@ object VoucherService : GeneralizedService {
     }
 
     fun insertGrant(target: UUID, newVoucher: VoucherGrant) {
-        val list = (voucherGrants.getOrDefault(target, mutableListOf())).also { it.add(newVoucher) }
-
+        val list = voucherGrants.getOrDefault(target, mutableListOf()).also { it.add(newVoucher) }
         voucherGrants[target] = list
-        handler.storeAsync(newVoucher.uniqueId, newVoucher)
+
+        // store UUID as string
+        handler.storeAsync(target.toString(), newVoucher)
     }
 
-     fun allGrantsFromPlayer(player: UUID): MutableList<VoucherGrant> {
+    fun allGrantsFromPlayer(player: UUID): MutableList<VoucherGrant> {
         if (voucherGrants.containsKey(player)) {
             return voucherGrants[player]!!
         }
 
         val ret = mutableListOf<VoucherGrant>()
-        val query = Document("_id", player)
+        val query = Document("_id", player.toString())
         val items = collection.find(query)
 
         for (document in items) {
@@ -74,4 +69,4 @@ object VoucherService : GeneralizedService {
 
         return ret
     }
- }
+}

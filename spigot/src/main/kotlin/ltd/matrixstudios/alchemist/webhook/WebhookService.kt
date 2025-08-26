@@ -47,7 +47,7 @@ object WebhookService
     fun sendInformation(info: WebhookInformation, client: WebhookClient)
     {
         val builder = WebhookMessageBuilder()
-        builder.setUsername("Alchemist Notifications") // use this username
+        builder.setUsername("Alchemy Notifications") // use this username
 
         builder.addEmbeds(info.getEmbed())
         client.send(builder.build())

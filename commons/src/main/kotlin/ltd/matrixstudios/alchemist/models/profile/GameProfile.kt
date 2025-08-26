@@ -54,11 +54,31 @@ data class GameProfile(
     var siblings: MutableList<UUID> = ArrayList(),
     var syncCode: String? = null,
     var playtimeMillis: Long = 0L,
+    var firstLoginAt: Long? = null,
+    var lastLoginAt: Long? = null
 )
 {
 
     @Transient
     var currentSession: Session? = null
+
+    fun updateLoginTimes(loginTimestamp: Long) {
+        if (firstLoginAt == null) {
+            firstLoginAt = loginTimestamp
+        }
+        lastLoginAt = loginTimestamp
+        lastSeenAt = loginTimestamp
+    }
+    fun getFormattedFirstLogin(): String? {
+        return firstLoginAt?.let {
+            java.text.SimpleDateFormat("dd/MM/yyyy hh:mm:ss a").format(Date(it))
+        }
+    }
+    fun getFormattedLastLogin(): String? {
+        return lastLoginAt?.let {
+            java.text.SimpleDateFormat("dd/MM/yyyy hh:mm:ss a").format(Date(it))
+        }
+    }
 
     fun getAllSiblings(): MutableList<UUID>
     {

@@ -4,11 +4,14 @@ import io.github.nosequel.data.connection.mongo.AuthenticatedMongoConnectionPool
 import io.github.nosequel.data.connection.mongo.NoAuthMongoConnectionPool
 import io.github.nosequel.data.connection.mongo.URIMongoConnectionPool
 import ltd.matrixstudios.alchemist.listeners.BungeeListener
+import ltd.matrixstudios.alchemist.service.session.SessionService
+import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.config.Configuration
 import net.md_5.bungee.config.ConfigurationProvider
 import net.md_5.bungee.config.YamlConfiguration
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class AlchemistBungee : Plugin() {
 
@@ -107,5 +110,14 @@ class AlchemistBungee : Plugin() {
 
         proxy.pluginManager.registerListener(this, BungeeListener())
 
+        ProxyServer.getInstance().scheduler.schedule(
+            AlchemistBungee.instance,
+            {
+                SessionService.cleanupInactiveSessions(2)
+            },
+            1L, 5L, TimeUnit.MINUTES
+        )
     }
+
 }
+

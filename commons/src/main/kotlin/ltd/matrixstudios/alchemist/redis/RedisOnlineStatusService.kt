@@ -26,6 +26,12 @@ object RedisOnlineStatusService {
         }
     }
 
+    fun updateOnlineServer(uuid: UUID, server: String) {
+        pool.resource.use { jedis ->
+            jedis.setex(getKey(uuid), 60, server)
+        }
+    }
+
     fun getOnlineServer(uuid: UUID): String? {
         pool.resource.use { jedis ->
             return jedis.get(getKey(uuid))

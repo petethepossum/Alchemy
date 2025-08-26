@@ -24,6 +24,7 @@ import ltd.matrixstudios.alchemist.redis.RedisOnlineStatusService
 import ltd.matrixstudios.alchemist.servers.listener.ServerLockListener
 import ltd.matrixstudios.alchemist.servers.statistic.StatisticManager
 import ltd.matrixstudios.alchemist.servers.task.ServerUpdateRunnable
+import ltd.matrixstudios.alchemist.service.session.SessionService
 import ltd.matrixstudios.alchemist.service.vouchers.VoucherService
 import ltd.matrixstudios.alchemist.staff.mode.listeners.FrozenPlayerListener
 import ltd.matrixstudios.alchemist.staff.mode.listeners.GenericStaffmodePreventionListener
@@ -69,7 +70,9 @@ class AlchemistSpigotPlugin : JavaPlugin()
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, Runnable {
             for (player in Bukkit.getOnlinePlayers()) {
                 RedisOnlineStatusService.markOnline(player.uniqueId, Alchemist.globalServer.id)
+                SessionService.heartbeat(player.uniqueId)
             }
+
         }, 20L * 30, 20L * 30) // Every 30 seconds
 
         val enabled = config.getBoolean("mongo.enabled")
