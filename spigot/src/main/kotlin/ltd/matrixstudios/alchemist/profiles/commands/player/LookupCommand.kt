@@ -30,12 +30,12 @@ class LookupCommand : BaseCommand()
         {
             override fun run()
             {
-                val serverFromProfile = gameProfile.metadata.get("server")
+                //val serverFromProfile = gameProfile.metadata.get("server")
                 val serverFromRedis = RedisOnlineStatusService.getOnlineServer(gameProfile.uuid) //is stored as string
 
-                if (serverFromProfile != null && !serverFromProfile.asString.equals("None", ignoreCase = true))
+                if (serverFromRedis != null && !serverFromRedis.equals("None", ignoreCase = true))
                 {
-                    player.sendMessage(Chat.format(AlchemistAPI.getRankDisplay(gameProfile.uuid) + " &ewas found on &f${serverFromRedis} &fMongo: ${serverFromProfile.asString}"))
+                    player.sendMessage(Chat.format(AlchemistAPI.getRankDisplay(gameProfile.uuid) + " &ewas found on &f${serverFromRedis}"))
                 } else
                 {
                     player.sendMessage(

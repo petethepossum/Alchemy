@@ -9,6 +9,7 @@ import ltd.matrixstudios.alchemist.api.AlchemistAPI
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
 import ltd.matrixstudios.alchemist.packets.StaffGeneralMessagePacket
 import ltd.matrixstudios.alchemist.redis.AsynchronousRedisSender
+import ltd.matrixstudios.alchemist.redis.RedisOnlineStatusService
 import ltd.matrixstudios.alchemist.service.server.UniqueServerService
 import ltd.matrixstudios.alchemist.util.Chat
 import ltd.matrixstudios.alchemist.util.NetworkUtil
@@ -31,7 +32,7 @@ class JumpToPlayerCommand : BaseCommand()
     fun jumpTo(player: Player, @Name("target") target: GameProfile)
     {
         val globalServer = Alchemist.globalServer
-        val onlineServer = target.metadata.get("server").asString
+        val onlineServer = RedisOnlineStatusService.getOnlineServer(target.uuid) ?: "None"
         val uniqueServer = UniqueServerService.byId(onlineServer.lowercase(Locale.getDefault()))
 
         if (uniqueServer == null || onlineServer.lowercase(Locale.getDefault()).equals("None", ignoreCase = true))

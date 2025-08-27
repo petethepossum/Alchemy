@@ -27,7 +27,6 @@ object NameTagFeature
             ),
             viewer
         )
-        LunarClientAPI.getInstance().giveAllStaffModules(target)
     }
 
     fun startNametagUpdateTask()
@@ -58,7 +57,6 @@ object NameTagFeature
     {
         Bukkit.getServer().onlinePlayers.forEach { staff ->
             LunarClientAPI.getInstance().resetNametag(player, staff)
-            LunarClientAPI.getInstance().disableAllStaffModules(player)
         }
     }
 }

@@ -1,7 +1,11 @@
 package ltd.matrixstudios.alchemist.staff.mode
 
+import com.lunarclient.apollo.Apollo
+import com.lunarclient.bukkitapi.LunarClientAPI
+import com.lunarclient.bukkitapi.`object`.StaffModule
 import ltd.matrixstudios.alchemist.AlchemistSpigotPlugin
 import ltd.matrixstudios.alchemist.client.LunarClientExtension
+import ltd.matrixstudios.alchemist.client.commands.LunarClientCommands
 import ltd.matrixstudios.alchemist.client.feature.NameTagFeature
 import ltd.matrixstudios.alchemist.client.feature.TeamViewFeature
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
@@ -58,6 +62,11 @@ object StaffSuiteManager
         {
             TeamViewFeature.clearTeamView(player)
             NameTagFeature.removeNameTag(player)
+            LunarClientAPI.getInstance().disableAllStaffModules(player)
+            LunarClientAPI.getInstance().setStaffModuleState(player, StaffModule.XRAY, false)
+            Apollo.getPlayerManager().getPlayer(player.uniqueId).ifPresent { apolloPlayer ->
+                LunarClientCommands.disableStaffModules(apolloPlayer)
+            }
         }
 
         player.removeMetadata("modmode", AlchemistSpigotPlugin.instance)
@@ -92,6 +101,11 @@ object StaffSuiteManager
         player.inventory.armorContents = null
 
         StaffItems.equip(player)
+        //LunarClientAPI.getInstance().giveAllStaffModules(player)
+        //LunarClientAPI.getInstance().setStaffModuleState(player, StaffModule.XRAY, true)
+        Apollo.getPlayerManager().getPlayer(player.uniqueId).ifPresent { apolloPlayer ->
+            LunarClientCommands.enableStaffModules(apolloPlayer)
+        }
 
         player.updateInventory()
 
