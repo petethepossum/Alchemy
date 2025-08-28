@@ -73,7 +73,7 @@ class BungeeListener : Listener {
         val profile = ProfileGameService.byId(player.uniqueId) ?: return
 
         //false fire
-        if (player.isConnected) return
+        if (player.isConnected && RedisOnlineStatusService.isOnline(player.uniqueId)) return
 
         RankGrantService.recalculatePlayer(profile)
 
@@ -83,7 +83,7 @@ class BungeeListener : Listener {
             if (playerRank.staff) {
                 StaffMessagePacket("&b[S] &r" + playerRank.color + player.name + " &3left the network").action()
             }
-        }, 100L, TimeUnit.SECONDS)
+        }, 10L, TimeUnit.SECONDS)
     }
 
     @EventHandler

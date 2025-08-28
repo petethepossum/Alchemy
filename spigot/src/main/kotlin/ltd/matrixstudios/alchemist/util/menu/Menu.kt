@@ -130,4 +130,13 @@ abstract class Menu(
             }
         }
     }
+    // update menu kinda handy to not flicker menu
+    fun updateMenu() {
+        val inventory = player.openInventory.topInventory
+        if (inventory != null) {
+            val buttons = getButtons(player)
+            inventory.contents = buttons.map { it.value.getButtonItem(player) }.toTypedArray()
+            player.updateInventory()
+        }
+    }
 }

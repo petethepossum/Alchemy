@@ -54,6 +54,7 @@ object PunishmentModule : PluginModule
         list.add(UnmuteCommand())
         list.add(UnblacklistCommand())
         list.add(PunishmentLookupCommands())
+        list.add(PunishCommand())
         list.add(RebanCommand())
 
         list.add(WipePunishmentsCommand)

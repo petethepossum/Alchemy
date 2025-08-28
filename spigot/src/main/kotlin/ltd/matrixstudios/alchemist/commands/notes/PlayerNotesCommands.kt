@@ -30,7 +30,8 @@ class PlayerNotesCommands : BaseCommand()
             ProfileNote(
                 author = sender.uniqueId,
                 content = note,
-                createdAt = System.currentTimeMillis()
+                createdAt = System.currentTimeMillis(),
+                deletable = true
             )
         )
 

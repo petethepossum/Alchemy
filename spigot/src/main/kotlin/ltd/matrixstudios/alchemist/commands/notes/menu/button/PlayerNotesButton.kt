@@ -1,14 +1,20 @@
 package ltd.matrixstudios.alchemist.commands.notes.menu.button
 
+import com.cryptomorin.xseries.NoteBlockMusic
+import com.cryptomorin.xseries.XSound
+import com.cryptomorin.xseries.XSound.ENTITY_VILLAGER_NO
 import ltd.matrixstudios.alchemist.api.AlchemistAPI
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
 import ltd.matrixstudios.alchemist.models.profile.notes.ProfileNote
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import ltd.matrixstudios.alchemist.util.Chat
+import ltd.matrixstudios.alchemist.util.items.ItemBuilder
 import ltd.matrixstudios.alchemist.util.menu.Button
+import ltd.matrixstudios.alchemist.util.skull.SkullUtil
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
+import org.bukkit.inventory.ItemStack
 import java.util.*
 
 class PlayerNotesButton(val note: ProfileNote, val targetProfile: GameProfile) : Button()
@@ -40,15 +46,37 @@ class PlayerNotesButton(val note: ProfileNote, val targetProfile: GameProfile) :
 
     override fun getData(player: Player): Short
     {
-        return 0
+        return 3
+    }
+
+    override fun getButtonItem(player: Player): ItemStack
+    {
+        val authorProfile = ProfileGameService.byId(note.author)
+        val authorName = authorProfile?.username ?: "Steve"
+
+        val skull = SkullUtil.generate(authorName, getDisplayName(player))
+
+        return ItemBuilder.copyOf(skull)
+            .setLore(getDescription(player))
+            .build()
     }
 
     override fun onClick(player: Player, slot: Int, type: ClickType)
     {
-        targetProfile.notes.remove(note)
-        ProfileGameService.save(targetProfile)
+        if (!note.deletable)
+        {
+            player.sendMessage(Chat.format("&cYou are not allowed to remove this note."))
+            XSound.play("ENTITY_VILLAGER_NO", { soundPlayer ->
+                soundPlayer.forPlayers(player)
+            })
+            return
+        }
+        else
+            targetProfile.notes.find { it == note }?.let { targetProfile.notes.remove(it) }
 
-        player.sendMessage(Chat.format("&cRemoved note from ${targetProfile.username}."))
-        player.closeInventory()
+            ProfileGameService.save(targetProfile)
+
+            player.sendMessage(Chat.format("&cRemoved note from ${targetProfile.username}."))
+            player.closeInventory()
     }
 }

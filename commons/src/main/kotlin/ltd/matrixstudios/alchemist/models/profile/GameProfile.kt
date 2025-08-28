@@ -295,6 +295,19 @@ data class GameProfile(
         return RedisOnlineStatusService.isOnline(uuid)
     }
 
+    fun getRedisServerID(): String?
+    {
+        return RedisOnlineStatusService.getOnlineServer(uuid)
+    }
+
+    fun getRedisServerDisplay(): String
+    {
+        val id = getRedisServerID() ?: return "Offline"
+        val server = UniqueServerService.byId(id) ?: return "Unknown"
+
+        return server.displayName
+    }
+
     fun getNiceServerName(): String
     {
         if (metadata.get("server") == null) return "Offline"

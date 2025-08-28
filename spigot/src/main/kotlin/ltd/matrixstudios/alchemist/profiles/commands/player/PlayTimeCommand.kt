@@ -2,6 +2,7 @@ package ltd.matrixstudios.alchemist.profiles.commands.player
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.*
+import ltd.matrixstudios.alchemist.api.AlchemistAPI
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import ltd.matrixstudios.alchemist.util.Chat
@@ -12,20 +13,29 @@ import org.bukkit.entity.Player
 class PlayTimeCommand : BaseCommand() {
 
     @Default
-    fun ownPlaytime(player: Player) {
-        val profile = ProfileGameService.byId(player.uniqueId)
-        if (profile == null) {
-            player.sendMessage(Chat.format("&cCould not find your profile!"))
+    @CommandCompletion("@gameprofile")
+    fun playtime(player: Player, @Name("target") @Optional targetProfile: GameProfile?) {
+        val finalProfile = targetProfile ?: ProfileGameService.byId(player.uniqueId)
+
+        if (finalProfile == null) {
+            player.sendMessage(Chat.format("&cCould not find your profile! This should not happen"))
             return
         }
-        val formatted = TimeUtil.formatDuration(profile.playtimeMillis)
-        player.sendMessage(Chat.format("&aYour playtime: &f$formatted"))
-    }
 
-    @CommandPermission("alchemist.staff")
-    @CommandCompletion("@gameprofile")
-    fun otherPlaytime(player: Player, @Name("target") target: GameProfile) {
-        val formatted = TimeUtil.formatDuration(target.playtimeMillis)
-        player.sendMessage(Chat.format("&a${target.username}'s playtime: &f$formatted"))
+        if (finalProfile.uuid != player.uniqueId && !player.hasPermission("alchemist.staff")) {
+            player.sendMessage(Chat.format("&cYou do not have permission to view other players' playtime."))
+            return
+        }
+
+        val targetName = if (finalProfile.uuid == player.uniqueId) {
+            "Your"
+        } else {
+            val rankColor = finalProfile.getCurrentRank().color
+            AlchemistAPI.getRankDisplay(finalProfile.uuid) + "$rankColor's&a"
+        }
+
+        val formatted = TimeUtil.formatDuration(finalProfile.playtimeMillis)
+
+        player.sendMessage(Chat.format("&a$targetName playtime: &f$formatted"))
     }
 }

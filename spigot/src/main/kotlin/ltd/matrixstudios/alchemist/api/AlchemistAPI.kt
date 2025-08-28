@@ -1,5 +1,6 @@
 package ltd.matrixstudios.alchemist.api
 
+import com.cryptomorin.xseries.XMaterial
 import ltd.matrixstudios.alchemist.AlchemistSpigotPlugin
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
 import ltd.matrixstudios.alchemist.models.ranks.Rank
@@ -9,6 +10,7 @@ import ltd.matrixstudios.alchemist.service.ranks.RankService
 import org.bukkit.Bukkit
 import org.bukkit.DyeColor
 import org.bukkit.entity.Player
+import org.bukkit.material.Wool
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -99,24 +101,73 @@ object AlchemistAPI
         }
     }
 
-    fun getWoolColor(color: String): DyeColor
-    {
-        return when {
-            color.contains("&1") || color.contains("&9") -> DyeColor.BLUE
-            color.contains("&2") -> DyeColor.GREEN
-            color.contains("&3") -> DyeColor.CYAN
-            color.contains("&4") || color.contains("&c") -> DyeColor.RED
-            color.contains("&5") -> DyeColor.PURPLE
-            color.contains("&6") -> DyeColor.ORANGE
-            color.contains("&7") -> DyeColor.SILVER
-            color.contains("&8") -> DyeColor.GRAY
-            color.contains("&a") -> DyeColor.LIME
-            color.contains("&b") -> DyeColor.LIGHT_BLUE
-            color.contains("&d") -> DyeColor.PINK
-            color.contains("&e") -> DyeColor.YELLOW
-            else -> DyeColor.WHITE
+    fun getWoolColor(color: String): DyeColor {
+        val xMaterial = when {
+            color.contains("&1") || color.contains("&9") -> XMaterial.BLUE_WOOL
+            color.contains("&2") -> XMaterial.GREEN_WOOL
+            color.contains("&3") -> XMaterial.CYAN_WOOL
+            color.contains("&4") || color.contains("&c") -> XMaterial.RED_WOOL
+            color.contains("&5") -> XMaterial.PURPLE_WOOL
+            color.contains("&6") -> XMaterial.ORANGE_WOOL
+            color.contains("&7") -> XMaterial.LIGHT_GRAY_WOOL // Silver
+            color.contains("&8") -> XMaterial.GRAY_WOOL // Gray
+            color.contains("&a") -> XMaterial.LIME_WOOL
+            color.contains("&b") -> XMaterial.LIGHT_BLUE_WOOL
+            color.contains("&d") -> XMaterial.MAGENTA_WOOL // Pink is often magenta
+            color.contains("&e") -> XMaterial.YELLOW_WOOL
+            else -> XMaterial.WHITE_WOOL
+        }
+
+
+        val material = xMaterial.parseMaterial()
+        return if (material != null) {
+            try {
+                (material.data as Wool).color
+            } catch (e: Exception) {
+                DyeColor.WHITE
+            }
+        } else {
+            DyeColor.WHITE
         }
     }
+//OLD getwoolcolor code below
+    /**
+     * fun getWoolColor(color: String): DyeColor
+     *
+     * {
+     *
+     * return when {
+     *
+     * color.contains("&1") || color.contains("&9") -> DyeColor.BLUE
+     *
+     * color.contains("&2") -> DyeColor.GREEN
+     *
+     * color.contains("&3") -> DyeColor.CYAN
+     *
+     * color.contains("&4") || color.contains("&c") -> DyeColor.RED
+     *
+     * color.contains("&5") -> DyeColor.PURPLE
+     *
+     * color.contains("&6") -> DyeColor.ORANGE
+     *
+     * color.contains("&7") -> DyeColor.SILVER
+     *
+     * color.contains("&8") -> DyeColor.GRAY
+     *
+     * color.contains("&a") -> DyeColor.LIME
+     *
+     * color.contains("&b") -> DyeColor.LIGHT_BLUE
+     *
+     * color.contains("&d") -> DyeColor.PINK
+     *
+     * color.contains("&e") -> DyeColor.YELLOW
+     *
+     * else -> DyeColor.WHITE
+     *
+     * }
+     *
+     * }
+     */
 
     fun getWoolColorStrict(color: String): DyeColor?
     {
