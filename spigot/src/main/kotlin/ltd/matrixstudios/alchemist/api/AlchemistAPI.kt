@@ -5,6 +5,7 @@ import ltd.matrixstudios.alchemist.AlchemistSpigotPlugin
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
 import ltd.matrixstudios.alchemist.models.ranks.Rank
 import ltd.matrixstudios.alchemist.profiles.permissions.AccessiblePermissionHandler
+import ltd.matrixstudios.alchemist.redis.RedisVanishStatusService
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import ltd.matrixstudios.alchemist.service.ranks.RankService
 import org.bukkit.Bukkit
@@ -98,6 +99,14 @@ object AlchemistAPI
                 .sortedBy {
                     AccessiblePermissionHandler.findRankWeight(it)
                 }.reversed()
+        }
+    }
+
+    fun supplyOnlinePlayerNumber(): CompletableFuture<Int> {
+        return CompletableFuture.supplyAsync {
+            Bukkit.getOnlinePlayers()
+                .filter { !RedisVanishStatusService.isVanished(it.uniqueId) }
+                .size
         }
     }
 

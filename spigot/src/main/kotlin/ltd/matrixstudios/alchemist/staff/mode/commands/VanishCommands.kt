@@ -21,12 +21,12 @@ class VanishCommands : BaseCommand()
     @CommandPermission("alchemist.staffmode")
     fun vanish(player: Player)
     {
-        if (player.hasMetadata("vanish"))
+        if (RedisVanishStatusService.isVanished(player.uniqueId))
         {
             player.removeMetadata("vanish", AlchemistSpigotPlugin.instance)
             RedisVanishStatusService.delVanished(player.uniqueId)
             StaffSuiteVisibilityHandler.onDisableVisbility(player)
-            player.sendMessage(Chat.format("&cYou have came out of vanish!"))
+            player.sendMessage(Chat.format("&cYou have come out of vanish!"))
             AsynchronousRedisSender.send(StaffActionAlertPacket("has unvanished", player.name, Alchemist.globalServer.id))
         } else
         {
@@ -48,7 +48,7 @@ class VanishCommands : BaseCommand()
 
         player.sendMessage(Chat.format("&6ModMode: &f" + if (modded) "&aYes" else "&cNo"))
         player.sendMessage(Chat.format("&6Vanished: &f" + if (vanish) "&aYes" else "&cNo"))
-        player.sendMessage(Chat.format("&6Visibility: &f" + if (redisvanish) "&eVanished [REDIS]" else "&eVisible [REDIS]"))
+        player.sendMessage(Chat.format("&6Visibility: &f" + if (redisvanish) "&aVanished &e[REDIS]" else "&cVisible &e[REDIS]"))
         player.sendMessage(Chat.format("&7&oBukkit respects and abides by these values"))
     }
 }
