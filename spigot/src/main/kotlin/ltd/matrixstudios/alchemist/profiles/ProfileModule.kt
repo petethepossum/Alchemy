@@ -56,6 +56,7 @@ object ProfileModule : PluginModule
         list.add(WipeGrantsCommand)
         list.add(WipeProfileCommand())
         list.add(SiblingCommands())
+        list.add(PrefsCommand())
 
         list.add(JumpToPlayerCommand())
         list.add(OnlineStaffCommand())

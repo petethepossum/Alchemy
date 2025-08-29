@@ -138,6 +138,7 @@ object ProfileGameService : GeneralizedService {
                 username,
                 username.toLowerCase(),
                 JsonObject(),
+                JsonObject(),
                 "",
                 arrayListOf(),
                 arrayListOf(),
