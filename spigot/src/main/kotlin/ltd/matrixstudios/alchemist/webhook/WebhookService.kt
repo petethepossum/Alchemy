@@ -19,7 +19,7 @@ object WebhookService
 
         builder.setThreadFactory { job ->
             val thread = Thread(job)
-            thread.name = "Alchemist - Punishment Payload"
+            thread.name = "Alchemy - Punishment Payload"
             thread.isDaemon = true
             thread
         }
@@ -34,7 +34,7 @@ object WebhookService
 
         builder.setThreadFactory { job ->
             val thread = Thread(job)
-            thread.name = "Alchemist - RankGrant Payload"
+            thread.name = "Alchemy - RankGrant Payload"
             thread.isDaemon = true
             thread
         }
