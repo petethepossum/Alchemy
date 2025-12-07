@@ -12,6 +12,7 @@ import io.github.nosequel.data.connection.mongo.AuthenticatedMongoConnectionPool
 import io.github.nosequel.data.connection.mongo.NoAuthMongoConnectionPool
 import io.github.nosequel.data.connection.mongo.URIMongoConnectionPool
 import ltd.matrixstudios.alchemist.listener.VelocityListener
+import ltd.matrixstudios.alchemist.redis.RedisConfig
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.simpleyaml.configuration.file.YamlFile
@@ -83,6 +84,15 @@ class AlchemistVelocity @Inject constructor(val server: ProxyServer, val logger:
 
     private fun setupDatabases() {
         val authEnabled = config.getBoolean("mongo.auth")
+        // Load Redis configuration
+        val redisHost = config.getString("redis.host", "127.0.0.1")
+        val redisPort = config.getInt("redis.port", 6379)
+        val redisUsername = if (config.getString("redis.username") == "") null else config.getString("redis.username")
+        val redisPassword = if (config.getString("redis.password") == "") null else config.getString("redis.password")
+        
+        // Load basic Redis configuration
+        RedisConfig.loadBasicConfig(redisHost, redisPort, redisUsername, redisPassword)
+        
         if (config.getString("uri") != "") {
             val connectionPool = URIMongoConnectionPool().apply {
                 this.databaseName = config.getString("mongo.database")
@@ -91,10 +101,10 @@ class AlchemistVelocity @Inject constructor(val server: ProxyServer, val logger:
 
             Alchemist.start(true, connectionPool,
                 true,
-                config.getString("redis.host"),
-                config.getInt("redis.port"),
-                (if (config.getString("redis.username") == "") null else config.getString("redis.username")),
-                (if (config.getString("redis.password") == "") null else config.getString("redis.password"))
+                redisHost,
+                redisPort,
+                redisUsername,
+                redisPassword
             )
         } else if (authEnabled) {
             val connectionPool = AuthenticatedMongoConnectionPool().apply {
@@ -108,10 +118,10 @@ class AlchemistVelocity @Inject constructor(val server: ProxyServer, val logger:
 
             Alchemist.start(true, connectionPool,
                 true,
-                config.getString("redis.host"),
-                config.getInt("redis.port"),
-                (if (config.getString("redis.username") == "") null else config.getString("redis.username")),
-                (if (config.getString("redis.password") == "") null else config.getString("redis.password"))
+                redisHost,
+                redisPort,
+                redisUsername,
+                redisPassword
             )
         } else {
             val connectionPool = NoAuthMongoConnectionPool().apply {
@@ -122,10 +132,10 @@ class AlchemistVelocity @Inject constructor(val server: ProxyServer, val logger:
 
             Alchemist.start(true, connectionPool,
                 true,
-                config.getString("redis.host"),
-                config.getInt("redis.port"),
-                (if (config.getString("redis.username") == "") null else config.getString("redis.username")),
-                (if (config.getString("redis.password") == "") null else config.getString("redis.password"))
+                redisHost,
+                redisPort,
+                redisUsername,
+                redisPassword
             )
         }
     }

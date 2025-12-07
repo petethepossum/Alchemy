@@ -109,6 +109,22 @@ object ProfileGameService : GeneralizedService {
         }
     }
 
+    fun getOutgoingFriendRequestsCount(prof: GameProfile): CompletableFuture<Int> {
+        return CompletableFuture.supplyAsync {
+            val queryFilter = Document("friendInvites", Document("\$in", listOf(prof.uuid.toString())))
+            val search = collection.find(queryFilter)
+            var count = 0
+
+            val iterator = search.iterator()
+            while (iterator.hasNext()) {
+                iterator.next()
+                count++
+            }
+
+            count
+        }
+    }
+
     fun getFriendProfiles(friendUUIDs: List<UUID>): List<GameProfile> {
         return friendUUIDs.mapNotNull { uuid ->
             ProfileGameService.byId(uuid)

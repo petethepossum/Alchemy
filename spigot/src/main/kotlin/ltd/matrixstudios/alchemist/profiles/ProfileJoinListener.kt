@@ -13,6 +13,7 @@ import ltd.matrixstudios.alchemist.punishments.PunishmentType
 import ltd.matrixstudios.alchemist.redis.AsynchronousRedisSender
 import ltd.matrixstudios.alchemist.service.ranks.RankService
 import ltd.matrixstudios.alchemist.util.Chat
+import ltd.matrixstudios.alchemist.util.DailyRewardUtil
 import ltd.matrixstudios.alchemist.util.TimeUtil
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.entity.Player
@@ -188,6 +189,16 @@ class ProfileJoinListener : Listener {
             }
         }
     }
+    @EventHandler
+    fun autoClaimDailyOnJoin(event: PlayerJoinEvent) {
+        val player = event.player
+        if (!player.hasPermission("daily.autoclaim")) {
+            return
+        }
+        val profile = AlchemistAPI.syncFindProfile(player.uniqueId) ?: return
+        DailyRewardUtil.handleDailyRewardClaimSilently(player, profile)
+    }
+
 
     @EventHandler
     fun leave(event: PlayerQuitEvent) {

@@ -2,18 +2,21 @@ package ltd.matrixstudios.alchemist.queue.command.menu
 
 /**
  * Class created on 7/12/2023
-
+ *
  * @author 98ping
  * @project Alchemist
  * @website https://solo.to/redis
  */
+
 import ltd.matrixstudios.alchemist.models.queue.QueueModel
 import ltd.matrixstudios.alchemist.models.queue.QueueStatus
 import ltd.matrixstudios.alchemist.queue.packet.QueueUpdatePacket
 import ltd.matrixstudios.alchemist.redis.AsynchronousRedisSender
 import ltd.matrixstudios.alchemist.service.queue.QueueService
+import ltd.matrixstudios.alchemist.service.server.UniqueServerService
 import ltd.matrixstudios.alchemist.util.Chat
 import ltd.matrixstudios.alchemist.util.InputPrompt
+import ltd.matrixstudios.alchemist.util.TimeUtil
 import ltd.matrixstudios.alchemist.util.menu.Button
 import ltd.matrixstudios.alchemist.util.menu.buttons.SimpleActionButton
 import ltd.matrixstudios.alchemist.util.menu.pagination.PaginatedMenu
@@ -21,25 +24,92 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import java.util.*
 
-class QueueEditorMenu(var player: Player) : PaginatedMenu(36, player)
-{
+class QueueEditorMenu(var player: Player) : PaginatedMenu(36, player) {
 
-    override fun getPagesButtons(player: Player): MutableMap<Int, Button>
-    {
+    override fun getPagesButtons(player: Player): MutableMap<Int, Button> {
         val buttons = hashMapOf<Int, Button>()
 
         var index = 0
-        for (queue in QueueService.cache.values)
-        {
-            buttons[index++] = QueueButton(queue)
-        }
+        // Sort by id just to keep things predictable
+        val queues = QueueService.cache.values.sortedBy { it.id }
 
+        for (queue in queues) {
+            buttons[index++] = createQueueDebugButton(queue)
+        }
 
         return buttons
     }
 
-    override fun getButtonPositions(): List<Int>
-    {
+    private fun createQueueDebugButton(queue: QueueModel): Button {
+        val uniqueServer = UniqueServerService.byId(queue.uniqueServerId)
+
+        val statusColor = when (queue.status) {
+            QueueStatus.OPEN -> "&a"
+            QueueStatus.PAUSED -> "&e"
+            QueueStatus.CLOSED -> "&c"
+        }
+
+        val playersInQueue = queue.playersInQueue.size
+
+        val serverDisplay = uniqueServer?.displayName ?: "&cUNKNOWN"
+        val serverBungee = uniqueServer?.bungeeName ?: "&cUNKNOWN"
+
+        val lore = mutableListOf<String>()
+        lore.add("")
+        lore.add(Chat.format("&7ID: &f${queue.id}"))
+        lore.add(Chat.format("&7Display: &f${queue.displayName}"))
+        lore.add(Chat.format("&7Status: $statusColor${queue.status}"))
+        lore.add(Chat.format("&7Players in queue: &f$playersInQueue"))
+        lore.add("")
+        lore.add(Chat.format("&7UniqueServer ID: &f${queue.uniqueServerId}"))
+        lore.add(Chat.format("&7Test Display: &f$serverDisplay"))
+        lore.add(Chat.format("&7Test Bungee: &f$serverBungee"))
+
+        if (queue.lastPull > 0L) {
+            val since = System.currentTimeMillis() - queue.lastPull
+            lore.add(Chat.format("&7Last Pull: &f${TimeUtil.formatDuration(since)} &7ago"))
+        } else {
+            lore.add(Chat.format("&7Last Pull: &fNever"))
+        }
+
+        // Show first few queued player UUIDs (shortened) for extra debugging
+        if (playersInQueue > 0) {
+            val sample = queue.playersInQueue
+                .take(3)
+                .joinToString("&7, ") { "&f" + it.id.toString().substring(0, 8) }
+
+            lore.add("")
+            lore.add(Chat.format("&7Sample players: $sample"))
+        }
+
+        lore.add("")
+        lore.add(Chat.format("&eClick to debug this queue"))
+
+        return SimpleActionButton(
+            Material.PAPER,
+            lore,
+            Chat.format("&b${queue.displayName}"),
+            0
+        ).setBody { player, _, _ ->
+            // Simple debug output when clicking the button
+            player.sendMessage(Chat.format("&7&m--------------------------"))
+            player.sendMessage(Chat.format("&e[Queue Debug] &f${queue.id}"))
+            player.sendMessage(Chat.format("&7Status: $statusColor${queue.status}"))
+            player.sendMessage(Chat.format("&7Players in queue: &f$playersInQueue"))
+            player.sendMessage(Chat.format("&7UniqueServer ID: &f${queue.uniqueServerId}"))
+            player.sendMessage(Chat.format("&7Dest Display: &f$serverDisplay"))
+            player.sendMessage(Chat.format("&7Dest Bungee: &f$serverBungee"))
+            if (queue.lastPull > 0L) {
+                val since = System.currentTimeMillis() - queue.lastPull
+                player.sendMessage(Chat.format("&7Last Pull: &f${TimeUtil.formatDuration(since)} &7ago"))
+            } else {
+                player.sendMessage(Chat.format("&7Last Pull: &fNever"))
+            }
+            player.sendMessage(Chat.format("&7&m--------------------------"))
+        }
+    }
+
+    override fun getButtonPositions(): List<Int> {
         return listOf(
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
@@ -47,8 +117,7 @@ class QueueEditorMenu(var player: Player) : PaginatedMenu(36, player)
         )
     }
 
-    override fun getHeaderItems(player: Player): MutableMap<Int, Button>
-    {
+    override fun getHeaderItems(player: Player): MutableMap<Int, Button> {
         return mutableMapOf(
             1 to Button.placeholder(),
             2 to Button.placeholder(),
@@ -62,20 +131,26 @@ class QueueEditorMenu(var player: Player) : PaginatedMenu(36, player)
                     Chat.format("&7cache"),
                     " "
                 ), "&eCreate New Queue", 0
-            ).setBody { player, i, clickType ->
+            ).setBody { player, _, _ ->
                 InputPrompt()
                     .withText(Chat.format("&eType in the name of the queue you want to create"))
                     .acceptInput { string ->
-                        QueueService.byId(string.lowercase(Locale.getDefault())).thenAccept {
-                            if (it != null)
-                            {
+                        val id = string.lowercase(Locale.getDefault())
+                        QueueService.byId(id).thenAccept {
+                            if (it != null) {
                                 player.sendMessage(Chat.format("&cThis queue already exists!"))
                                 return@thenAccept
                             }
 
                             val queue = QueueModel(
-                                string.lowercase(Locale.getDefault()), string, 1, QueueStatus.CLOSED, 1000,
-                                string.lowercase(Locale.getDefault()), -1L, "DIAMOND"
+                                id,
+                                string,
+                                1,
+                                QueueStatus.CLOSED,
+                                1000,
+                                id,
+                                -1L,
+                                "DIAMOND"
                             )
                             QueueService.saveQueue(queue)
                             AsynchronousRedisSender.send(QueueUpdatePacket())
@@ -103,13 +178,11 @@ class QueueEditorMenu(var player: Player) : PaginatedMenu(36, player)
         )
     }
 
-    override fun getButtonsPerPage(): Int
-    {
+    override fun getButtonsPerPage(): Int {
         return 21
     }
 
-    override fun getTitle(player: Player): String
-    {
+    override fun getTitle(player: Player): String {
         return Chat.format("&7[Editor] &eQueues")
     }
 }

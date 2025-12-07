@@ -18,6 +18,27 @@ redis:
   port: 6379
   username: ""
   password: ""
+  # Advanced Redis configuration (optional)
+  advanced:
+    # Connection pool settings
+    maxTotalConnections: 20
+    maxIdleConnections: 10
+    minIdleConnections: 2
+    connectionTimeout: 2000
+    maxWaitTime: 5000
+    
+    # Health monitoring settings
+    healthCheckInterval: 30
+    maxReconnectAttempts: 5
+    slowQueryThreshold: 1000
+    
+    # Retry settings
+    maxRetries: 3
+    retryBackoffMultiplier: 1000
+    
+    # TTL settings (in seconds)
+    onlineStatusTTL: 60
+    vanishStatusTTL: 0
 
 debug:
   noJoinEvents: false

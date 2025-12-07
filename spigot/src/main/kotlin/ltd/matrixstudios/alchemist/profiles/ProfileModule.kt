@@ -55,6 +55,7 @@ object ProfileModule : PluginModule
         list.add(SudoCommand())
         list.add(WipeGrantsCommand)
         list.add(WipeProfileCommand())
+        list.add(ClaimDailyCommand())
         list.add(SiblingCommands())
 
         list.add(JumpToPlayerCommand())

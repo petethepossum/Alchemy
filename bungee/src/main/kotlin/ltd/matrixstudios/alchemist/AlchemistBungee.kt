@@ -4,6 +4,7 @@ import io.github.nosequel.data.connection.mongo.AuthenticatedMongoConnectionPool
 import io.github.nosequel.data.connection.mongo.NoAuthMongoConnectionPool
 import io.github.nosequel.data.connection.mongo.URIMongoConnectionPool
 import ltd.matrixstudios.alchemist.listeners.BungeeListener
+import ltd.matrixstudios.alchemist.redis.RedisConfig
 import ltd.matrixstudios.alchemist.service.session.SessionService
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
@@ -62,6 +63,15 @@ class AlchemistBungee : Plugin() {
 
         println(authEnabled)
 
+        // Load Redis configuration
+        val redisHost = configuration.getString("redis.host", "127.0.0.1")
+        val redisPort = configuration.getInt("redis.port", 6379)
+        val redisUsername = if (configuration.getString("redis.username") == "") null else configuration.getString("redis.username")
+        val redisPassword = if (configuration.getString("redis.password") == "") null else configuration.getString("redis.password")
+        
+        // Load basic Redis configuration
+        RedisConfig.loadBasicConfig(redisHost, redisPort, redisUsername, redisPassword)
+        
         if (configuration.getString("uri") != "") {
             val connectionPool = URIMongoConnectionPool().apply {
                 this.databaseName = configuration.getString("mongo.database")
@@ -70,10 +80,10 @@ class AlchemistBungee : Plugin() {
 
             Alchemist.start(true, connectionPool,
                 true,
-                configuration.getString("redis.host"),
-                configuration.getInt("redis.port"),
-                (if (configuration.getString("redis.username") == "") null else configuration.getString("redis.username")),
-                (if (configuration.getString("redis.password") == "") null else configuration.getString("redis.password"))
+                redisHost,
+                redisPort,
+                redisUsername,
+                redisPassword
             )
         } else if (authEnabled) {
             val connectionPool = AuthenticatedMongoConnectionPool().apply {
@@ -87,10 +97,10 @@ class AlchemistBungee : Plugin() {
 
             Alchemist.start(true, connectionPool,
                 true,
-                configuration.getString("redis.host"),
-                configuration.getInt("redis.port"),
-                (if (configuration.getString("redis.username") == "") null else configuration.getString("redis.username")),
-                (if (configuration.getString("redis.password") == "") null else configuration.getString("redis.password"))
+                redisHost,
+                redisPort,
+                redisUsername,
+                redisPassword
             )
         } else {
             val connectionPool = NoAuthMongoConnectionPool().apply {
@@ -101,10 +111,10 @@ class AlchemistBungee : Plugin() {
 
             Alchemist.start(true, connectionPool,
                 true,
-                configuration.getString("redis.host"),
-                configuration.getInt("redis.port"),
-                (if (configuration.getString("redis.username") == "") null else configuration.getString("redis.username")),
-                (if (configuration.getString("redis.password") == "") null else configuration.getString("redis.password"))
+                redisHost,
+                redisPort,
+                redisUsername,
+                redisPassword
             )
         }
 

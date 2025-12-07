@@ -17,7 +17,7 @@ class QueueRemindUsersTask : BukkitRunnable()
             for (entry in queue.playersInQueue)
             {
                 val uuid = entry.id
-                val bukkitPlayer = Bukkit.getPlayer(uuid) ?: return
+                val bukkitPlayer = Bukkit.getPlayer(uuid) ?: continue
 
                 val message = AlchemistSpigotPlugin.instance.config.getStringList("queue-message")
 

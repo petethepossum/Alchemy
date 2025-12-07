@@ -21,6 +21,7 @@ import ltd.matrixstudios.alchemist.redis.RedisPacketManager
 import ltd.matrixstudios.alchemist.repository.AlchemistRepositoryService
 import ltd.matrixstudios.alchemist.servers.commands.task.ServerReleaseTask
 import ltd.matrixstudios.alchemist.redis.RedisOnlineStatusService
+import ltd.matrixstudios.alchemist.redis.RedisConfig
 import ltd.matrixstudios.alchemist.servers.listener.ServerLockListener
 import ltd.matrixstudios.alchemist.servers.statistic.StatisticManager
 import ltd.matrixstudios.alchemist.servers.task.ServerUpdateRunnable
@@ -120,6 +121,43 @@ class AlchemistSpigotPlugin : JavaPlugin()
             }
         }
 
+        // Load Redis configuration from config.yml
+        val redisHost = config.getString("redis.host", "127.0.0.1") ?: "127.0.0.1"
+        val redisPort = config.getInt("redis.port", 6379)
+        val redisUsername = config.getString("redis.username").takeIf { it?.isNotBlank() == true }
+        val redisPassword = config.getString("redis.password").takeIf { it?.isNotBlank() == true }
+        
+        // Load basic Redis configuration
+        RedisConfig.loadBasicConfig(redisHost, redisPort, redisUsername, redisPassword)
+        
+        // Load advanced Redis configuration if it exists
+        val advancedSection = config.getConfigurationSection("redis.advanced")
+        if (advancedSection != null) {
+            RedisConfig.loadAdvancedConfig(
+                maxTotalConnections = advancedSection.getInt("maxTotalConnections", 20),
+                maxIdleConnections = advancedSection.getInt("maxIdleConnections", 10),
+                minIdleConnections = advancedSection.getInt("minIdleConnections", 2),
+                connectionTimeout = advancedSection.getInt("connectionTimeout", 2000),
+                maxWaitTime = advancedSection.getInt("maxWaitTime", 5000),
+                healthCheckInterval = advancedSection.getLong("healthCheckInterval", 30L),
+                maxReconnectAttempts = advancedSection.getInt("maxReconnectAttempts", 5),
+                slowQueryThreshold = advancedSection.getLong("slowQueryThreshold", 1000L),
+                maxRetries = advancedSection.getInt("maxRetries", 3),
+                retryBackoffMultiplier = advancedSection.getLong("retryBackoffMultiplier", 1000L),
+                onlineStatusTTL = advancedSection.getInt("onlineStatusTTL", 60),
+                vanishStatusTTL = advancedSection.getInt("vanishStatusTTL", 0)
+            )
+        }
+        
+        // Validate Redis configuration
+        val redisErrors = RedisConfig.validate()
+        if (redisErrors.isNotEmpty()) {
+            Chat.sendConsoleMessage("&c[Redis] &fConfiguration errors found:")
+            redisErrors.forEach { error ->
+                Chat.sendConsoleMessage("&c[Redis] &f- $error")
+            }
+        }
+        
         Alchemist.start(
             enabled,
             connectionPool
@@ -129,10 +167,10 @@ class AlchemistSpigotPlugin : JavaPlugin()
                     databaseName = config.getString("mongo.database")
                 },
             true,
-            config.getString("redis.host"),
-            config.getInt("redis.port"),
-            (if (config.getString("redis.username") == "") null else config.getString("redis.username")),
-            (if (config.getString("redis.password") == "") null else config.getString("redis.password")),
+            RedisConfig.host,
+            RedisConfig.port,
+            RedisConfig.username,
+            RedisConfig.password,
             this.dataFolder.path
         )
 

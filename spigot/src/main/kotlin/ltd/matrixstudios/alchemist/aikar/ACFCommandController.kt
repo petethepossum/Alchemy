@@ -50,6 +50,7 @@ import ltd.matrixstudios.alchemist.punishments.PunishmentType
 import ltd.matrixstudios.alchemist.queue.command.ModifyQueueCommands
 import ltd.matrixstudios.alchemist.queue.command.QueueCommands
 import ltd.matrixstudios.alchemist.redis.command.RedisCommand
+import ltd.matrixstudios.alchemist.redis.command.RedisStatusCommand
 import ltd.matrixstudios.alchemist.servers.commands.BroadcastCommand
 import ltd.matrixstudios.alchemist.service.reports.ReportService
 import ltd.matrixstudios.alchemist.models.report.ReportModel
@@ -118,6 +119,7 @@ object ACFCommandController
 
             registerCommand(AdminPanelCommand())
             registerCommand(RedisCommand)
+            registerCommand(RedisStatusCommand)
             registerCommand(ReportCommand())
             registerCommand(AutoBroadcastCommands)
 
