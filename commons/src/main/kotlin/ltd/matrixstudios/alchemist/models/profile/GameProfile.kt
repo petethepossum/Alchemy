@@ -37,6 +37,7 @@ data class GameProfile(
     var username: String,
     var lowercasedUsername: String,
     var metadata: JsonObject = JsonObject(),
+    var profileSettings: JsonObject = JsonObject(),
     var ip: String,
     var friends: ArrayList<UUID> = ArrayList(),
     var friendInvites: ArrayList<UUID> = ArrayList(),
@@ -273,6 +274,27 @@ data class GameProfile(
     fun hasMetadata(key: String): Boolean
     {
         return metadata.get(key) != null
+    }
+
+    fun getAllSettingsForCategory(category: String): Set<String> {
+        val categoryObj = profileSettings.getAsJsonObject(category) ?: return emptySet()
+        return categoryObj.entrySet().map { it.key }.toSet()
+    }
+
+    fun getProfileSetting(category: String, key: String): Boolean {
+        return profileSettings.getAsJsonObject(category)?.get(key)?.asBoolean ?: false
+    }
+
+    fun setProfileSetting(category: String, key: String, value: Boolean) {
+        val categoryObj = profileSettings.getAsJsonObject(category) ?: JsonObject().also {
+            profileSettings.add(category, it)
+        }
+        categoryObj.addProperty(key, value)
+    }
+
+    fun allProfileSettings(): Set<String>
+    {
+        return profileSettings.keySet()
     }
 
     fun getActivePrefix(): Tag?

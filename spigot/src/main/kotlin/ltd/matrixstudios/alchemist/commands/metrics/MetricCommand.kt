@@ -48,6 +48,7 @@ class MetricCommand : BaseCommand()
                 "Profile_${int}",
                 "Profile_${int}".lowercase(Locale.getDefault()),
                 JsonObject(),
+                JsonObject(),
                 "",
                 arrayListOf(),
                 arrayListOf(),
