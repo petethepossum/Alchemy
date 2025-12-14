@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 class HistoryCommand : BaseCommand()
 {
 
-    @CommandAlias("c|history|checkpunishments")
+    @CommandAlias("c|history|checkpunishments|check")
     @CommandPermission("alchemist.punishments.check")
     @CommandCompletion("@gameprofile")
     fun ban(sender: Player, @Name("target") gameProfile: AsyncGameProfile): CompletableFuture<Void>

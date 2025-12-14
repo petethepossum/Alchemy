@@ -7,6 +7,7 @@ import io.github.nosequel.data.connection.mongo.NoAuthMongoConnectionPool
 import io.github.nosequel.data.connection.mongo.URIMongoConnectionPool
 import ltd.matrixstudios.alchemist.aikar.ACFCommandController
 import ltd.matrixstudios.alchemist.broadcasts.BroadcastService
+import ltd.matrixstudios.alchemist.chatsnap.ChatCache
 import ltd.matrixstudios.alchemist.commands.coins.listener.CoinShopLoadTransactionsListener
 import ltd.matrixstudios.alchemist.filter.listener.FilterListener
 import ltd.matrixstudios.alchemist.grants.GrantConfigurationService
@@ -215,6 +216,7 @@ class AlchemistSpigotPlugin : JavaPlugin()
         val listenerStart = System.currentTimeMillis()
         server.pluginManager.registerEvents(ProfileJoinListener(), this)
         server.pluginManager.registerEvents(MenuListener(), this)
+        server.pluginManager.registerEvents(ChatCache, this)
 
         if (config.getBoolean("modules.filters"))
         {
@@ -320,15 +322,13 @@ class AlchemistSpigotPlugin : JavaPlugin()
         Chat.sendMultiConsoleMessage(
             arrayOf(
                 "&7&m--------------------------------",
-                "&a&lMatrix Studios Software &7- &f" + description.name + " &7[&a" + description.version + "&7]",
-                "&a&lForked from &fAlchemist &a&linto &fAlchemy &a&l by petethepossum",
+                "&a&lPetethepossum - Alchemy&7- &f" + description.name + " &7[&a" + description.version + "&7]",
+                "&a&lForked from &fAlchemist by Matrix Studios &a&linto &fAlchemy &a&l by petethepossum",
                 "",
-                "&fThis plugin has been distributed by Matrix Studios.",
+                "&fThis plugin has been distributed by petethepossum.",
                 "&fPlugin is not intended to be resold.",
                 "",
-                "&aWebsite: &fhttps://matrix-studios-software.github.io/",
-                "&aDiscord: &fhttps://discord.gg/UMnHT7QCSk",
-                "&aGitHub: &fhttps://github.com/Matrix-Studios-Software",
+                "&aWebsite: &fhttps://github.com/petethepossum",
                 "&7&m--------------------------------",
             )
         )

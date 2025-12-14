@@ -1,7 +1,10 @@
 package ltd.matrixstudios.alchemist.util
 
+import com.cryptomorin.xseries.XSound
+import ltd.matrixstudios.alchemist.AlchemistSpigotPlugin
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 object DailyRewardUtil {
@@ -102,11 +105,18 @@ object DailyRewardUtil {
 
         ProfileGameService.save(profile)
 
-        player.sendMessage(
-            Chat.format(
-                "&e&l[Rewards] &aYou auto-claimed &e$reward &acoins! " +
-                        "&7(Streak: &e${profile.dailyRewardStreak} days&7)"
-            )
+        Bukkit.getScheduler().runTaskLater(
+            AlchemistSpigotPlugin.instance,
+            Runnable {
+                if (!player.isOnline) return@Runnable
+
+                XSound.ENTITY_CHICKEN_EGG.play(player, 1f, 1f)
+
+                player.sendMessage(
+                    Chat.format("&e&l[Rewards] &aYour daily reward was auto-claimed! &7(+${reward} coins)")
+                )
+            },
+            5 * 20L
         )
     }
 

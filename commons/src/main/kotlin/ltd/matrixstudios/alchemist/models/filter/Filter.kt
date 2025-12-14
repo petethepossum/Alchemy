@@ -12,6 +12,7 @@ data class Filter(
     var staffExempt: Boolean,
     var exemptPermission: String,
     var shouldPunish: Boolean,
+    var numericId: Int = 0
 ) {
 
 }

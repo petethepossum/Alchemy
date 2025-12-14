@@ -2,6 +2,8 @@ package ltd.matrixstudios.alchemist.profiles
 
 import co.aikar.commands.BaseCommand
 import ltd.matrixstudios.alchemist.AlchemistSpigotPlugin
+import ltd.matrixstudios.alchemist.chatsnap.ChatSnapCommand
+import ltd.matrixstudios.alchemist.chatsnap.ChatSnapViewCommand
 import ltd.matrixstudios.alchemist.module.PluginModule
 import ltd.matrixstudios.alchemist.profiles.commands.auth.AuthCommands
 import ltd.matrixstudios.alchemist.profiles.commands.player.ProfileCommand
@@ -79,6 +81,8 @@ object ProfileModule : PluginModule
         }
 
         list.add(SettingsCommand())
+        list.add(ChatSnapCommand())
+        list.add(ChatSnapViewCommand())
 
         return list
     }

@@ -7,7 +7,9 @@ import ltd.matrixstudios.alchemist.commands.alts.menu.AltsMenu
 import ltd.matrixstudios.alchemist.commands.notes.menu.PlayerNotesMenu
 import ltd.matrixstudios.alchemist.commands.tags.grants.menu.grants.TagGrantsMenu
 import ltd.matrixstudios.alchemist.friends.filter.FriendFilter
+import ltd.matrixstudios.alchemist.friends.menus.FriendRequestMenu
 import ltd.matrixstudios.alchemist.friends.menus.FriendsListMenu
+import ltd.matrixstudios.alchemist.friends.menus.FriendsMenu
 import ltd.matrixstudios.alchemist.grants.menu.grants.GrantsMenu
 import ltd.matrixstudios.alchemist.grants.menu.grants.filter.GrantFilter
 import ltd.matrixstudios.alchemist.grants.view.GrantsCommand
@@ -197,12 +199,10 @@ class PlayerInformationMenu(val player: Player, val target: GameProfile) : Menu(
             buttons[4] = object : Button() {
 
                 override fun getMaterial(player: Player): Material {
-                    // Legacy skull material (like in PlayerNotesButton)
                     return Material.SKULL_ITEM
                 }
 
                 override fun getData(player: Player): Short {
-                    // 3 = player head data value
                     return 3
                 }
 
@@ -259,7 +259,11 @@ class PlayerInformationMenu(val player: Player, val target: GameProfile) : Menu(
                 "&aFriends",
                 0
             ).setBody { _, _, _ ->
-                FriendsListMenu(player, profile, FriendFilter.ALL).updateMenu()
+                if (profile.friendInvites.isEmpty()) {
+                    FriendsListMenu(player, profile, FriendFilter.ALL).updateMenu()
+                } else {
+                    FriendRequestMenu(player, profile).updateMenu()
+            }
             }
 
             // Chat Colors

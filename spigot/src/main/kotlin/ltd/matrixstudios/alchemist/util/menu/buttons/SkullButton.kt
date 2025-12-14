@@ -1,5 +1,6 @@
 package ltd.matrixstudios.alchemist.util.menu.buttons
 
+import com.cryptomorin.xseries.XMaterial
 import ltd.matrixstudios.alchemist.util.Chat
 import ltd.matrixstudios.alchemist.util.menu.Button
 import ltd.matrixstudios.alchemist.util.skull.SkullUtil
@@ -23,15 +24,21 @@ class SkullButton(
 
     override fun getButtonItem(player: Player): ItemStack? {
         // Create a player skull with custom texture, display name, and lore
+        val baseHead: ItemStack = XMaterial.PLAYER_HEAD.parseItem()
+            ?: XMaterial.PLAYER_HEAD.parseMaterial()?.let { ItemStack(it) }
+            ?: ItemStack(Material.valueOf("SKULL_ITEM"), 1, 3)
+
         return SkullUtil.applyCustomHead(
-            skull = ItemStack(Material.SKULL_ITEM),
+            skull = baseHead,
             base64 = texture,
             displayName = name,
             lore = description
         )
     }
 
-    override fun getMaterial(player: Player): Material = Material.SKULL_ITEM
+    override fun getMaterial(player: Player): Material =
+        XMaterial.PLAYER_HEAD.parseMaterial()
+            ?: Material.valueOf("SKULL_ITEM")
 
     override fun getDescription(player: Player): MutableList<String> = description
 

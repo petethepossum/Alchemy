@@ -49,7 +49,7 @@ object FilterListener : Listener
                 mutableListOf(),
                 player.uniqueId,
                 UUID.fromString("00000000-0000-0000-0000-000000000000"),
-                "Automated Filter Punishment",
+                "Automated Filter Punishment -- Filter #${filter.numericId}",
                 TimeUtil.parseTime(filter.duration) * 1000L,
                 DefaultActor(Executor.CONSOLE, ActorType.GAME)
             )

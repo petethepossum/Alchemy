@@ -7,7 +7,7 @@ mongo:
   username: ""
   password: ""
   authDB: ""
-  database: "Alchemist"
+  database: "Alchemy"
 
 #leave blank to not use!
 uri: ""
@@ -146,7 +146,7 @@ staffmode:
 
 #for general server information to use in command messages
 details:
-  genericName: "Alchemist"
+  genericName: "Alchemy"
   ip: "yourIp.xyz"
   serverWebsite: "www.yourIp.xyz"
 

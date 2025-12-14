@@ -29,9 +29,25 @@ object FilterService : GeneralizedService {
     }
 
     fun save(filter: Filter) {
+        if (filter.numericId == 0) {
+            filter.numericId = getNextNumericId()
+        }
         handler.storeAsync(filter.id, filter)
 
         cache[filter.word] = filter
+    }
+    private fun getNextNumericId(): Int {
+        var id: Int
+        val used = cache.values.map { it.numericId }.toSet()
+
+        do {
+            id = (100..999).random() // generate 3-digit ID
+        } while (id in used)
+
+        return id
+    }
+    fun byNumericId(id: Int): Filter? {
+        return cache.values.firstOrNull { it.numericId == id }
     }
 
     fun byWord(word: String): Filter? {

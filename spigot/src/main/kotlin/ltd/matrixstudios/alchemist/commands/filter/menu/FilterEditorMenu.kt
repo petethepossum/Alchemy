@@ -34,11 +34,11 @@ class FilterEditorMenu(val player: Player) : PaginatedMenu(27, player)
                 .withText(Chat.format("&aType in the word you want to use for this filter"))
                 .acceptInput {
                     val filter =
-                        Filter(UUID.randomUUID(), it.lowercase(), false, PunishmentType.MUTE, "1d", false, "", false)
+                        Filter(UUID.randomUUID(),it.lowercase(), false, PunishmentType.MUTE, "1d", false, "", false)
 
                     FilterService.save(filter)
                     AsynchronousRedisSender.send(RefreshFiltersPacket())
-                    player.sendMessage(Chat.format("&aCreated a new filter!"))
+                    player.sendMessage(Chat.format("&aCreated a new filter! &7ID: #${filter.numericId}"))
                 }.start(player)
         }
 

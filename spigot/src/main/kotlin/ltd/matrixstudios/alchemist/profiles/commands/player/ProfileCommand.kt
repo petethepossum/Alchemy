@@ -4,7 +4,7 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import ltd.matrixstudios.alchemist.models.profile.GameProfile
-import ltd.matrixstudios.alchemist.profiles.commands.player.menu.ProfileMenu
+import ltd.matrixstudios.alchemist.profiles.commands.player.menu.PlayerInformationMenu
 import ltd.matrixstudios.alchemist.service.profiles.ProfileGameService
 import ltd.matrixstudios.alchemist.util.Chat
 import org.bukkit.entity.Player
@@ -19,6 +19,6 @@ class ProfileCommand : BaseCommand() {
             player.sendMessage(Chat.format("&cCould not find your profile!"))
             return
         }
-        ProfileMenu(player, profile).openMenu()
+        PlayerInformationMenu.PlayerSelfInformationMenu(player, profile).openMenu()
     }
 }

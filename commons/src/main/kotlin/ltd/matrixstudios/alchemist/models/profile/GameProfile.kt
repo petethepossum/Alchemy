@@ -1,5 +1,6 @@
 package ltd.matrixstudios.alchemist.models.profile
 
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import ltd.matrixstudios.alchemist.Alchemist
 import ltd.matrixstudios.alchemist.models.chatcolor.ChatColor
@@ -18,8 +19,8 @@ import ltd.matrixstudios.alchemist.models.tags.Tag
 import ltd.matrixstudios.alchemist.punishments.PunishmentType
 import ltd.matrixstudios.alchemist.punishments.actor.ActorType
 import ltd.matrixstudios.alchemist.punishments.actor.DefaultActor
-import ltd.matrixstudios.alchemist.redis.RedisOnlineStatusService
 import ltd.matrixstudios.alchemist.punishments.actor.executor.Executor
+import ltd.matrixstudios.alchemist.redis.RedisOnlineStatusService
 import ltd.matrixstudios.alchemist.service.expirable.PunishmentService
 import ltd.matrixstudios.alchemist.service.expirable.RankGrantService
 import ltd.matrixstudios.alchemist.service.expirable.TagGrantService
@@ -31,13 +32,17 @@ import ltd.matrixstudios.alchemist.service.tags.TagService
 import org.bson.Document
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.Date
 
 data class GameProfile(
     var uuid: UUID,
     var username: String,
     var lowercasedUsername: String,
     var metadata: JsonObject = JsonObject(),
-    var profileSettings: JsonObject = JsonObject(),
+
+    // CHANGED: allow null/JsonNull/objects safely from Gson
+    var profileSettings: JsonElement? = JsonObject(),
+
     var ip: String,
     var friends: ArrayList<UUID> = ArrayList(),
     var friendInvites: ArrayList<UUID> = ArrayList(),
@@ -59,11 +64,18 @@ data class GameProfile(
     var playtimeMillis: Long = 0L,
     var firstLoginAt: Long? = null,
     var lastLoginAt: Long? = null
-)
-{
+) {
 
     @Transient
     var currentSession: Session? = null
+
+    // Migration from old json element
+    @Transient
+    private var profileSettingsMigrated: Boolean = false
+
+    init {
+        ensureProfileSettingsObject(migrateIfNeeded = true)
+    }
 
     fun updateLoginTimes(loginTimestamp: Long) {
         if (firstLoginAt == null) {
@@ -72,34 +84,30 @@ data class GameProfile(
         lastLoginAt = loginTimestamp
         lastSeenAt = loginTimestamp
     }
+
     fun getFormattedFirstLogin(): String? {
         return firstLoginAt?.let {
             java.text.SimpleDateFormat("dd/MM/yyyy hh:mm:ss a").format(Date(it))
         }
     }
+
     fun getFormattedLastLogin(): String? {
         return lastLoginAt?.let {
             java.text.SimpleDateFormat("dd/MM/yyyy hh:mm:ss a").format(Date(it))
         }
     }
 
-    fun getAllSiblings(): MutableList<UUID>
-    {
-        if (siblings == null)
-        {
+    fun getAllSiblings(): MutableList<UUID> {
+        if (siblings == null) {
             this.siblings = mutableListOf()
-
             return siblings
         }
-
         return siblings
     }
 
     @JvmName("getAuthStatus1")
-    fun getAuthStatus(): AuthStatus
-    {
-        return if (authStatus == null)
-        {
+    fun getAuthStatus(): AuthStatus {
+        return if (authStatus == null) {
             AuthStatus(
                 0L,
                 hasSetup2fa = false,
@@ -110,28 +118,23 @@ data class GameProfile(
         } else authStatus!!
     }
 
-    fun getPunishments(): Collection<Punishment>
-    {
+    fun getPunishments(): Collection<Punishment> {
         return PunishmentService.getFromCache(uuid)
     }
 
-    fun getRankDisplay(): String
-    {
+    fun getRankDisplay(): String {
         val rank = getCurrentRank()
-
         return rank.color + username
     }
 
     fun getExecutedCountByType(type: PunishmentType): Int =
         PunishmentService.findExecutorPunishments(uuid).count { it.punishmentType == type.name }
 
-    fun getActivePunishments(): Collection<Punishment>
-    {
+    fun getActivePunishments(): Collection<Punishment> {
         return getPunishments().filter { it.expirable.isActive() }
     }
 
-    fun getActivePunishmentsFilteredByImportance(): Collection<Punishment>
-    {
+    fun getActivePunishmentsFilteredByImportance(): Collection<Punishment> {
         val bindings = hashMapOf(
             PunishmentType.BLACKLIST to 5,
             PunishmentType.BAN to 4,
@@ -155,82 +158,65 @@ data class GameProfile(
     else
         CompletableFuture.completedFuture(backingCachedAlternateAccounts!!)
 
-    private fun _getAltAccounts(): MutableList<GameProfile>
-    {
+    private fun _getAltAccounts(): MutableList<GameProfile> {
         val finalAccounts = arrayListOf<GameProfile>()
         val targetDocuments = ProfileGameService.collection.find(Document("ip", ip))
 
-
-        for (document in targetDocuments)
-        {
+        for (document in targetDocuments) {
             val documentJson = document.toJson()
-
             val profile = Alchemist.gson.fromJson(documentJson, GameProfile::class.java)
-
             finalAccounts.add(profile)
-
         }
 
         return finalAccounts
     }
 
-    fun getAltMostSeriousPunishment(): String
-    {
+    fun getAltMostSeriousPunishment(): String {
         if (alternateAccountHasBlacklist()) return "&4Blacklist"
         if (alternateAccountHasBan()) return "&cBan"
         return "&fNone"
     }
 
-    fun getPunishmentedPrefix(): String
-    {
-        if (alternateAccountHasBlacklist())
-        {
+    fun getPunishmentedPrefix(): String {
+        if (alternateAccountHasBlacklist()) {
             return "&4"
         }
 
-        if (alternateAccountHasBan())
-        {
+        if (alternateAccountHasBan()) {
             return "&c"
         }
 
-        if (alternateAccountHasMute())
-        {
+        if (alternateAccountHasMute()) {
             return "&f&o"
         }
 
         return "&7"
     }
 
-    fun alternateAccountHasBlacklist(): Boolean
-    {
+    fun alternateAccountHasBlacklist(): Boolean {
         val alts = getAltAccounts().join()
 
-        for (acc in alts)
-        {
+        for (acc in alts) {
             if (acc.hasActivePunishment(PunishmentType.BLACKLIST)) return true
         }
 
         return false
     }
 
-    fun alternateAccountHasBan(): Boolean
-    {
+    fun alternateAccountHasBan(): Boolean {
         val alts = getAltAccounts().join()
 
-        for (acc in alts)
-        {
+        for (acc in alts) {
             if (acc.hasActivePunishment(PunishmentType.BAN)) return true
         }
 
         return false
     }
 
-    fun alternateAccountHasMute(): Boolean
-    {
+    fun alternateAccountHasMute(): Boolean {
         val alts = getAltAccounts().join()
 
-        for (acc in alts)
-        {
+        for (acc in alts) {
             if (acc.hasActivePunishment(PunishmentType.MUTE)) return true
         }
 
@@ -239,22 +225,18 @@ data class GameProfile(
 
     fun altHasAnyPunishment() = alternateAccountHasMute() || alternateAccountHasBan() || alternateAccountHasBlacklist()
 
-    fun getFirstBlacklistFromAlts(): Punishment?
-    {
+    fun getFirstBlacklistFromAlts(): Punishment? {
         val alts = getAltAccounts().join()
 
-        for (acc in alts)
-        {
-            if (acc.hasActivePunishment(PunishmentType.BLACKLIST))
-            {
+        for (acc in alts) {
+            if (acc.hasActivePunishment(PunishmentType.BLACKLIST)) {
                 return acc.getActivePunishments(PunishmentType.BLACKLIST).firstOrNull()
             }
         }
         return null
     }
 
-    fun createNewSession(server: UniqueServer): Session
-    {
+    fun createNewSession(server: UniqueServer): Session {
         val session =
             Session(UUID.randomUUID().toString().substring(0, 4), uuid, mutableMapOf(), System.currentTimeMillis(), 0L)
 
@@ -266,46 +248,77 @@ data class GameProfile(
         return session
     }
 
-    fun hasActivePrefix(): Boolean
-    {
+    fun hasActivePrefix(): Boolean {
         return activePrefix != null
     }
 
-    fun hasMetadata(key: String): Boolean
-    {
+    fun hasMetadata(key: String): Boolean {
         return metadata.get(key) != null
     }
 
+
+    private fun ensureProfileSettingsObject(migrateIfNeeded: Boolean): JsonObject {
+        var changed = false
+
+        if (profileSettings == null || profileSettings!!.isJsonNull) {
+            profileSettings = JsonObject()
+            changed = true
+        }
+
+        if (profileSettings !is JsonObject) {
+            profileSettings = JsonObject()
+            changed = true
+        }
+
+        if (migrateIfNeeded && changed && !profileSettingsMigrated) {
+            profileSettingsMigrated = true
+            try {
+                ProfileGameService.save(this)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
+
+        return profileSettings as JsonObject
+    }
+
+    private fun settingsObject(): JsonObject = ensureProfileSettingsObject(migrateIfNeeded = false)
+
     fun getAllSettingsForCategory(category: String): Set<String> {
-        val categoryObj = profileSettings.getAsJsonObject(category) ?: return emptySet()
+        val root = settingsObject()
+        val categoryObj = root.getAsJsonObject(category) ?: return emptySet()
         return categoryObj.entrySet().map { it.key }.toSet()
     }
 
     fun getProfileSetting(category: String, key: String): Boolean {
-        return profileSettings.getAsJsonObject(category)?.get(key)?.asBoolean ?: false
+        val root = settingsObject()
+        val categoryObj = root.getAsJsonObject(category) ?: return false
+        return categoryObj.get(key)?.asBoolean ?: false
     }
 
     fun setProfileSetting(category: String, key: String, value: Boolean) {
-        val categoryObj = profileSettings.getAsJsonObject(category) ?: JsonObject().also {
-            profileSettings.add(category, it)
+        val root = settingsObject()
+        val categoryObj = root.getAsJsonObject(category) ?: JsonObject().also {
+            root.add(category, it)
         }
         categoryObj.addProperty(key, value)
     }
 
-    fun allProfileSettings(): Set<String>
-    {
-        return profileSettings.keySet()
+    fun allProfileSettings(): Set<String> {
+        val root = settingsObject()
+        return root.keySet()
     }
 
-    fun getActivePrefix(): Tag?
-    {
-        val tag = TagService.byId(activePrefix!!) ?: return null
 
+    fun getProfileSettingsRoot(): JsonObject = settingsObject()
+
+
+    fun getActivePrefix(): Tag? {
+        val tag = TagService.byId(activePrefix!!) ?: return null
         return tag
     }
 
-    fun canUse(tag: Tag): Boolean
-    {
+    fun canUse(tag: Tag): Boolean {
         return TagGrantService.getValues().get()
             .filter {
                 it.target == uuid && it.expirable.isActive() && it.getGrantable() != null
@@ -314,26 +327,22 @@ data class GameProfile(
             } != null
     }
 
-    fun isOnline(): Boolean
-    {
+    fun isOnline(): Boolean {
         return RedisOnlineStatusService.isOnline(uuid)
     }
 
-    fun getRedisServerID(): String?
-    {
+    fun getRedisServerID(): String? {
         return RedisOnlineStatusService.getOnlineServer(uuid)
     }
 
-    fun getRedisServerDisplay(): String
-    {
+    fun getRedisServerDisplay(): String {
         val id = getRedisServerID() ?: return "Offline"
         val server = UniqueServerService.byId(id) ?: return "Unknown"
 
         return server.displayName
     }
 
-    fun getNiceServerName(): String
-    {
+    fun getNiceServerName(): String {
         if (metadata.get("server") == null) return "Offline"
         val id = metadata.get("server").asString
         val server = UniqueServerService.byId(id) ?: return "Unknown"
@@ -341,30 +350,25 @@ data class GameProfile(
         return server.displayName
     }
 
-    fun supplyFriendsAsProfiles(): CompletableFuture<List<GameProfile>>
-    {
+    fun supplyFriendsAsProfiles(): CompletableFuture<List<GameProfile>> {
         return CompletableFuture.supplyAsync {
             friends.map { ProfileGameService.byId(it) }.filter { Objects.nonNull(it) }.map { it!! }
         }
     }
 
-    fun getActivePunishments(type: PunishmentType): Collection<Punishment>
-    {
+    fun getActivePunishments(type: PunishmentType): Collection<Punishment> {
         return getPunishments().filter { it.getGrantable() == type && it.expirable.isActive() }
     }
 
-    fun getPunishments(type: PunishmentType): Collection<Punishment>
-    {
+    fun getPunishments(type: PunishmentType): Collection<Punishment> {
         return getPunishments().filter { it.getGrantable() == type }
     }
 
-    fun getExtraPermissions(bungee: Boolean): MutableList<ApplicablePermission>
-    {
+    fun getExtraPermissions(bungee: Boolean): MutableList<ApplicablePermission> {
         return this.additionalPermissions?.filter { it.isActive(bungee) }?.toMutableList() ?: mutableListOf()
     }
 
-    fun getPermissionsAsList(): MutableList<String>
-    {
+    fun getPermissionsAsList(): MutableList<String> {
         val allPerms = arrayListOf<String>()
 
         allPerms.addAll(getCurrentRank().permissions)
@@ -377,20 +381,17 @@ data class GameProfile(
 
         parents.forEach { rank ->
             rank!!.permissions.forEach {
-                if (!allPerms.contains(it))
-                {
+                if (!allPerms.contains(it)) {
                     allPerms.add(it)
                 }
             }
         }
 
-
         return allPerms
     }
 
     // TODO: handle false permissions in the map
-    fun getPermissions(): Map<String, Boolean>
-    {
+    fun getPermissions(): Map<String, Boolean> {
         val allPerms = getCurrentRank().permissions
             .toMutableList()
 
@@ -408,8 +409,7 @@ data class GameProfile(
             }
     }
 
-    fun getPermissionsExclusivelyGlobal(): Map<String, Boolean>
-    {
+    fun getPermissionsExclusivelyGlobal(): Map<String, Boolean> {
         val allPerms = getHighestGlobalRank().permissions
             .toMutableList()
 
@@ -427,14 +427,11 @@ data class GameProfile(
             }
     }
 
-
-    fun hasActivePunishment(type: PunishmentType): Boolean
-    {
+    fun hasActivePunishment(type: PunishmentType): Boolean {
         return getPunishments().find { it.expirable.isActive() && it.getGrantable() == type } != null
     }
 
-    fun getHighestGlobalRank(): Rank
-    {
+    fun getHighestGlobalRank(): Rank {
         val currentGrant: Rank? = RankService.findFirstAvailableDefaultRank()
 
         /*
@@ -444,16 +441,14 @@ data class GameProfile(
             it.expirable.isActive() && (it.verifyGrantScope().global)
         }.sortedByDescending { it.getGrantable().weight }.firstOrNull()
 
-        if (filteredRank == null || filteredRank.getGrantable().weight < (currentGrant?.weight ?: 0))
-        {
+        if (filteredRank == null || filteredRank.getGrantable().weight < (currentGrant?.weight ?: 0)) {
             return currentGrant ?: RankService.FALLBACK_RANK
         }
 
         return filteredRank.getGrantable()
     }
 
-    fun getCurrentGrant(): RankGrant
-    {
+    fun getCurrentGrant(): RankGrant {
         val currentGrant: Rank? = RankService.findFirstAvailableDefaultRank()
         val globalServer = Alchemist.globalServer
 
@@ -465,10 +460,8 @@ data class GameProfile(
                     )
         }.sortedByDescending { it.getGrantable().weight }.firstOrNull()
 
-        if (filteredRank == null || filteredRank.getGrantable().weight < (currentGrant?.weight ?: 0))
-        {
-            if (currentGrant == null)
-            {
+        if (filteredRank == null || filteredRank.getGrantable().weight < (currentGrant?.weight ?: 0)) {
+            if (currentGrant == null) {
                 return RankService.FALLBACK_GRANT
             }
 
@@ -486,25 +479,10 @@ data class GameProfile(
         return filteredRank
     }
 
-    fun getCurrentRank(): Rank
-    {
+    fun getCurrentRank(): Rank {
         val currentGrant: Rank? = RankService.findFirstAvailableDefaultRank()
         val globalServer = Alchemist.globalServer
 
-
-        /*
-            Get a total collection of all active grants and then
-            we make a full collection of grants that are global (apply
-            on every server) and scope specific ranks. From here we can just
-            check which one comes out on top
-
-            Checks include:
-                - Duration is still valid
-                - Grant scope is global or applies on instance
-                - Rank scope is global or applies on instance
-
-            In the event that everything here fails, return fallback rank (Thanks Lunar.gg)
-         */
         val filteredRank = RankGrantService.getFromCache(uuid).filter {
             it.expirable.isActive()
                     && (it.verifyGrantScope().global || it.verifyGrantScope().appliesOn(globalServer))
@@ -513,8 +491,7 @@ data class GameProfile(
                     )
         }.sortedByDescending { it.getGrantable().weight }.firstOrNull()
 
-        if (filteredRank == null || filteredRank.getGrantable().weight < (currentGrant?.weight ?: 0))
-        {
+        if (filteredRank == null || filteredRank.getGrantable().weight < (currentGrant?.weight ?: 0)) {
             return currentGrant ?: RankService.FALLBACK_RANK
         }
 

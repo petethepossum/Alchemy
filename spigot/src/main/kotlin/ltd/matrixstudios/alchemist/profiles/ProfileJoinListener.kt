@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
 
+
 class ProfileJoinListener : Listener {
 
     @EventHandler
@@ -52,7 +53,7 @@ class ProfileJoinListener : Listener {
                 }
             }
             "admin" -> {
-                if (event.player.hasPermission("alchemist.adminchat")) {
+                if (event.player.hasPermission("alchemist.admin")) {
                     event.isCancelled = true
                     AsynchronousRedisSender.send(
                         AdminMessagePacket(

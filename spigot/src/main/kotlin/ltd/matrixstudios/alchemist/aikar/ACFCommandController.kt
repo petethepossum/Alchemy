@@ -8,6 +8,7 @@ import ltd.matrixstudios.alchemist.aikar.context.*
 import ltd.matrixstudios.alchemist.broadcasts.commands.AutoBroadcastCommands
 import ltd.matrixstudios.alchemist.chatcolors.ChatColorLoader
 import ltd.matrixstudios.alchemist.chatcolors.commands.ChatColorCommands
+import ltd.matrixstudios.alchemist.chatsnap.ChatSnapCommand
 import ltd.matrixstudios.alchemist.commands.admin.AdminChatCommand
 import ltd.matrixstudios.alchemist.commands.admin.panel.AdminPanelCommand
 import ltd.matrixstudios.alchemist.commands.alts.AltsCommand
@@ -53,6 +54,7 @@ import ltd.matrixstudios.alchemist.redis.command.RedisCommand
 import ltd.matrixstudios.alchemist.redis.command.RedisStatusCommand
 import ltd.matrixstudios.alchemist.servers.commands.BroadcastCommand
 import ltd.matrixstudios.alchemist.service.reports.ReportService
+import ltd.matrixstudios.alchemist.chatsnap.ChatSnapViewCommand
 import ltd.matrixstudios.alchemist.models.report.ReportModel
 import ltd.matrixstudios.alchemist.service.expirable.PunishmentService
 import ltd.matrixstudios.alchemist.staff.requests.commands.ReportCommand
@@ -203,6 +205,8 @@ object ACFCommandController
             }
 
             registerCommand(LookupCommand())
+            registerCommand(ChatSnapCommand())
+            registerCommand(ChatSnapViewCommand())
         }
 
     }
