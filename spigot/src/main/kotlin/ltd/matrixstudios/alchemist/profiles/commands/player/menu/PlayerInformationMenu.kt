@@ -1,6 +1,7 @@
 package ltd.matrixstudios.alchemist.profiles.commands.player.menu
 
 import com.cryptomorin.xseries.XMaterial
+import com.cryptomorin.xseries.XSound
 import ltd.matrixstudios.alchemist.api.AlchemistAPI
 import ltd.matrixstudios.alchemist.chatcolors.menu.ChatColorMenu
 import ltd.matrixstudios.alchemist.commands.alts.menu.AltsMenu
@@ -50,7 +51,7 @@ class PlayerInformationMenu(val player: Player, val target: GameProfile) : Menu(
         // Fill placeholders
         for (i in 0 until 54) {
             buttons[i] =
-                PlaceholderButton(XMaterial.LIGHT_GRAY_STAINED_GLASS_PANE.parseMaterial()!!, mutableListOf(), "", 7)
+                PlaceholderButton(XMaterial.GRAY_STAINED_GLASS_PANE.parseMaterial()!!, mutableListOf(), "", 7)
         }
 
         // Player Profile Skull
@@ -180,15 +181,15 @@ class PlayerInformationMenu(val player: Player, val target: GameProfile) : Menu(
 
 
 
-        override fun size(buttons: Map<Int, Button>): Int = 54
+        override fun size(buttons: Map<Int, Button>): Int = 44
 
         override fun getButtons(player: Player): MutableMap<Int, Button> {
             val buttons = mutableMapOf<Int, Button>()
 
             // Background filler
-            for (i in 0 until 54) {
+            for (i in 0 until 44) {
                 buttons[i] = PlaceholderButton(
-                    XMaterial.GRAY_STAINED_GLASS_PANE.parseMaterial()!!,
+                    XMaterial.BLACK_STAINED_GLASS_PANE.parseMaterial()!!,
                     mutableListOf(),
                     "",
                     7
@@ -213,11 +214,13 @@ class PlayerInformationMenu(val player: Player, val target: GameProfile) : Menu(
                 override fun getDescription(player: Player): MutableList<String> {
                     val rankDisplay = AlchemistAPI.getRankDisplay(profile.uuid)
                     return mutableListOf(
+                        "&7--------------------------------------------------",
+                        Chat.format("&7&l\u25ef &7Rank: &r$rankDisplay"),
+                        Chat.format("&7&l\u25ef &7Coins: &e${profile.coins}"),
+                        Chat.format("&7&l\u25ef &7Playtime: &e${TimeUtil.formatDuration(profile.playtimeMillis)}"),
                         "",
-                        Chat.format("&7Rank: &r$rankDisplay"),
-                        Chat.format("&7Coins: &6${profile.coins}"),
-                        Chat.format("&7Playtime: &f${TimeUtil.formatDuration(profile.playtimeMillis)}"),
-                        ""
+                        Chat.format("&7&l\u25ef &7Server: &e${profile.getRedisServerDisplay()}"),
+                        "&7--------------------------------------------------",
                     )
                 }
 
@@ -261,8 +264,10 @@ class PlayerInformationMenu(val player: Player, val target: GameProfile) : Menu(
             ).setBody { _, _, _ ->
                 if (profile.friendInvites.isEmpty()) {
                     FriendsListMenu(player, profile, FriendFilter.ALL).updateMenu()
+                    XSound.UI_BUTTON_CLICK.play(player, 10f, 1f)
                 } else {
                     FriendRequestMenu(player, profile).updateMenu()
+                    XSound.UI_BUTTON_CLICK.play(player, 10f, 1f)
             }
             }
 
@@ -278,6 +283,7 @@ class PlayerInformationMenu(val player: Player, val target: GameProfile) : Menu(
                 0
             ).setBody { _, _, _ ->
                 ChatColorMenu(player).updateMenu()
+                XSound.UI_BUTTON_CLICK.play(player, 10f, 1f)
             }
 
             // Statistics

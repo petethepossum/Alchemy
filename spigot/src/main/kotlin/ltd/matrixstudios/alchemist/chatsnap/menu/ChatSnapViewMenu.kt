@@ -26,7 +26,7 @@ class ChatSnapViewMenu(player: Player, private val snap: ChatSnap, private val t
         val buttons = mutableMapOf<Int, Button>()
 
         val fillerMat = XMaterial.LIGHT_GRAY_STAINED_GLASS_PANE.parseMaterial() ?: Material.STAINED_GLASS_PANE
-        for (i in 0 until 27) {
+        for (i in 0 until 35) {
             buttons[i] = PlaceholderButton(fillerMat, mutableListOf(), "", 7)
         }
 

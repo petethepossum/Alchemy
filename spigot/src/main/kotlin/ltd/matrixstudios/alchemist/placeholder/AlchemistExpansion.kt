@@ -167,8 +167,62 @@ class AlchemistExpansion : PlaceholderExpansion()
             {
                 return Chat.format(profile.getActivePrefix()?.prefix ?: "")
             }
+            "rankDisplay_mm" -> {
+                val legacy = getRankDisplayLegacy(profile)
+                return legacyToMiniMessage(legacy)
+            }
         }
 
         return ""
+    }
+    private fun legacyToMiniMessage(input: String): String {
+        val map = linkedMapOf(
+            "&0" to "<black>",
+            "&1" to "<dark_blue>",
+            "&2" to "<dark_green>",
+            "&3" to "<dark_aqua>",
+            "&4" to "<dark_red>",
+            "&5" to "<dark_purple>",
+            "&6" to "<gold>",
+            "&7" to "<gray>",
+            "&8" to "<dark_gray>",
+            "&9" to "<blue>",
+            "&a" to "<green>",
+            "&b" to "<aqua>",
+            "&c" to "<red>",
+            "&d" to "<light_purple>",
+            "&e" to "<yellow>",
+            "&f" to "<white>",
+            "&l" to "<bold>",
+            "&o" to "<italic>",
+            "&n" to "<underlined>",
+            "&m" to "<strikethrough>",
+            "&k" to "<obfuscated>",
+            "&r" to "<reset>"
+        )
+
+        var out = input.replace("§", "&") // god damn you neptune you piece of shit
+        for ((k, v) in map) out = out.replace(k, v, ignoreCase = true)
+        return out
+    }
+
+
+    private fun getRankDisplayLegacy(profile: ltd.matrixstudios.alchemist.models.profile.GameProfile): String {
+        val rankFallback = RankService.FALLBACK_RANK
+        val disguiseProfile = profile.rankDisguiseAttribute
+
+        if (disguiseProfile != null) {
+            val disguiseRank = RankService.byId(disguiseProfile.rank)
+            if (disguiseRank != null) {
+                return disguiseRank.color + disguiseRank.displayName
+            }
+        }
+
+        val curr = profile.getCurrentRank()
+        if (curr != null) {
+            return curr.color + curr.displayName
+        }
+
+        return rankFallback.color + rankFallback.displayName
     }
 }

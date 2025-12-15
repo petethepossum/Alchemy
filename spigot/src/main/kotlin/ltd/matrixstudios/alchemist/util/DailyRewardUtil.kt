@@ -85,6 +85,7 @@ object DailyRewardUtil {
                         "&7(Streak: &e${profile.dailyRewardStreak} days&7)"
             )
         )
+        XSound.ENTITY_ITEM_PICKUP.play(player, 1f, 1f)
         return true
     }
     fun handleDailyRewardClaimSilently(player: Player, profile: GameProfile) {
@@ -110,10 +111,11 @@ object DailyRewardUtil {
             Runnable {
                 if (!player.isOnline) return@Runnable
 
-                XSound.ENTITY_CHICKEN_EGG.play(player, 1f, 1f)
+                XSound.ENTITY_CHICKEN_EGG.play(player, 10f, 1f)
 
                 player.sendMessage(
                     Chat.format("&e&l[Rewards] &aYour daily reward was auto-claimed! &7(+${reward} coins)")
+
                 )
             },
             5 * 20L
