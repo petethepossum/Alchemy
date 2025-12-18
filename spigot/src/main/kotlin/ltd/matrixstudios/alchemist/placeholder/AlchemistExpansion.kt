@@ -15,17 +15,17 @@ class AlchemistExpansion : PlaceholderExpansion()
 {
     override fun getIdentifier(): String
     {
-        return "alchemist"
+        return "alchemy"
     }
 
     override fun getAuthor(): String
     {
-        return "Matrix Studios"
+        return "Matrix Studios petethepossum"
     }
 
     override fun getVersion(): String
     {
-        return "1.0.1"
+        return "1.28"
     }
 
     override fun onPlaceholderRequest(player: Player, params: String): String
