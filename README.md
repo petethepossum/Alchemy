@@ -1,4 +1,4 @@
-# Alchemy FORK OF "Alchmeist"
+# Alchemy FORK OF "Alchemist"
 Based on: https://github.com/98ping/Alchemist
 A swift and efficient rank core meant to work on all versions 
 
