@@ -52,14 +52,25 @@ class RankController @Autowired constructor(private val repository: RankReposito
         if (!rank.isPresent)
         {
             throw ResponseStatusException(
-                HttpStatus.CONFLICT,
+                HttpStatus.NOT_FOUND,
                 "Unable to handle request because rank does not exist!"
             )
         }
 
+        val allRanks = repository.findAll()
+        val parentRanks = rank.get().parents.mapNotNull { parentId ->
+            allRanks.firstOrNull { it.id == parentId }
+        }
+        val childRanks = allRanks.filter { it.parents.contains(rank.get().id) }
+        val allPermissions = rank.get().getAllPermissions()
+
         modelAndView.addObject("section", "rank-editor")
         modelAndView.addObject("rank", rank.get())
         modelAndView.addObject("user", profile)
+        modelAndView.addObject("allRanks", allRanks.filter { it.id != rank.get().id })
+        modelAndView.addObject("parentRanks", parentRanks)
+        modelAndView.addObject("childRanks", childRanks)
+        modelAndView.addObject("allPermissions", allPermissions)
         return modelAndView
     }
 
@@ -70,6 +81,10 @@ class RankController @Autowired constructor(private val repository: RankReposito
         @RequestParam(required = false) prefix: String?,
         @RequestParam(required = false) color: String?,
         @RequestParam(required = false) weight: String?,
+        @RequestParam(required = false) permission: String?,
+        @RequestParam(required = false) permissionAction: String?,
+        @RequestParam(required = false) parentId: String?,
+        @RequestParam(required = false) parentAction: String?,
         request: HttpServletRequest
     ): ModelAndView {
         val profile = request.session.getAttribute("user") as AlchemistUser?
@@ -81,7 +96,7 @@ class RankController @Autowired constructor(private val repository: RankReposito
         val rankOptional = repository.findById(id.lowercase())
 
         if (!rankOptional.isPresent) {
-            throw ResponseStatusException(HttpStatus.CONFLICT, "Unable to handle request because rank does not exist!")
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to handle request because rank does not exist!")
         }
 
         val rank = rankOptional.get()
@@ -115,6 +130,47 @@ class RankController @Autowired constructor(private val repository: RankReposito
                 updated = true
             } catch (e: NumberFormatException) {
                 // Ignore invalid number input, do not update weight
+            }
+        }
+
+        // Handle permission management
+        permission?.let { perm ->
+            if (perm.isNotBlank()) {
+                val lowercasePerm = perm.lowercase()
+                when (permissionAction) {
+                    "add" -> {
+                        if (!rank.permissions.contains(lowercasePerm)) {
+                            rank.permissions.add(lowercasePerm)
+                            updated = true
+                        }
+                    }
+                    "remove" -> {
+                        if (rank.permissions.contains(lowercasePerm)) {
+                            rank.permissions.remove(lowercasePerm)
+                            updated = true
+                        }
+                    }
+                }
+            }
+        }
+
+        // Handle parent management
+        parentId?.let { parent ->
+            if (parent.isNotBlank() && parent != rank.id) {
+                when (parentAction) {
+                    "add" -> {
+                        if (!rank.parents.contains(parent.lowercase())) {
+                            rank.parents.add(parent.lowercase())
+                            updated = true
+                        }
+                    }
+                    "remove" -> {
+                        if (rank.parents.contains(parent.lowercase())) {
+                            rank.parents.remove(parent.lowercase())
+                            updated = true
+                        }
+                    }
+                }
             }
         }
 

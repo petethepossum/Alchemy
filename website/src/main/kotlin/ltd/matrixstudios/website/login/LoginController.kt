@@ -21,7 +21,19 @@ class LoginController
 {
 
     @RequestMapping(value = ["/login"], method = [RequestMethod.GET])
-    fun onLoginRequest(): ModelAndView = ModelAndView("login")
+    fun onLoginRequest(request: javax.servlet.http.HttpServletRequest): ModelAndView {
+        val modelAndView = ModelAndView("login")
+        val error = request.getParameter("error")
+        val authRequired = request.getParameter("auth_required")
+        
+        if (error == "true") {
+            modelAndView.addObject("errorMessage", "Invalid username or password. Please try again.")
+        } else if (authRequired == "true") {
+            modelAndView.addObject("errorMessage", "You must be logged in to access that page. Please log in to continue.")
+        }
+        
+        return modelAndView
+    }
 
     @RequestMapping(value = ["/register"], method = [RequestMethod.GET])
     fun onRegistrationRequest(): ModelAndView

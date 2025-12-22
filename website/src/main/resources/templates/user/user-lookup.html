@@ -4,7 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Alchemist Rank Solution</title>
+    <title>Alchemy Rank Solution</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="../static/vendors/mdi/css/materialdesignicons.min.css"
           th:href="@{/vendors/mdi/css/materialdesignicons.min.css}">
@@ -43,17 +43,25 @@
     <!-- Layout styles -->
     <link rel="stylesheet" type="text/css" media="all"
           href="../static/css/homepage.css" th:href="@{/css/homepage.css}"/>
+    <!-- Custom styles -->
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../static/css/custom.css" th:href="@{/css/custom.css}"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../static/css/logo.css" th:href="@{/css/logo.css}"/>
     <!-- End layout styles -->
-    <link rel="shortcut icon" href="assets/images/favicon.png"/>
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.png}"/>
 </head>
 <body>
 <div class="container-scroller">
     <!-- partial:partials/_sidebar.html -->
     <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-            <a class="sidebar-brand brand-logo" href="index.html"><img src="assets/images/logo.svg" alt="logo"/></a>
-            <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="assets/images/logo-mini.svg"
-                                                                            alt="logo"/></a>
+            <a class="sidebar-brand brand-logo" href="/panel">
+                <span class="brand-logo-text">Alchemy</span>
+            </a>
+            <a class="sidebar-brand brand-logo-mini" href="/panel">
+                <span class="brand-logo-mini-text">A</span>
+            </a>
         </div>
         <ul class="nav">
             <li class="nav-item profile">
@@ -73,7 +81,7 @@
                             class="mdi mdi-dots-vertical"></i></a>
                     <div class="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list"
                          aria-labelledby="profile-dropdown">
-                        <a href="#" class="dropdown-item preview-item">
+                        <a th:href="@{/settings/account}" class="dropdown-item preview-item">
                             <div class="preview-thumbnail">
                                 <div class="preview-icon bg-dark rounded-circle">
                                     <i class="mdi mdi-settings text-primary"></i>
@@ -99,7 +107,7 @@
                 </a>
             </li>
             <li class="nav-item menu-items">
-                <a class="nav-link" href="pages/forms/basic_elements.html">
+                <a class="nav-link" href="/panel">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
@@ -107,7 +115,7 @@
                 </a>
             </li>
             <li class="nav-item menu-items">
-                <a class="nav-link" href="pages/tables/basic-table.html">
+                <a class="nav-link" href="/panel">
               <span class="menu-icon">
                 <i class="mdi mdi-table-large"></i>
               </span>
@@ -134,7 +142,7 @@
                 </a>
             </li>
             <li class="nav-item menu-items">
-                <a class="nav-link" href="pages/icons/mdi.html">
+                <a class="nav-link" href="/api/servers">
               <span class="menu-icon">
                 <i class="mdi mdi-server-network"></i>
               </span>
@@ -142,7 +150,7 @@
                 </a>
             </li>
             <li class="nav-item menu-items">
-                <a class="nav-link" href="pages/icons/mdi.html">
+                <a class="nav-link" href="/panel">
               <span class="menu-icon">
                 <i class="mdi mdi-currency-usd"></i>
               </span>
@@ -150,7 +158,7 @@
                 </a>
             </li>
             <li class="nav-item menu-items">
-                <a class="nav-link" href="pages/icons/mdi.html">
+                <a class="nav-link" href="/api/punishments">
               <span class="menu-icon">
                 <i class="mdi mdi-hammer"></i>
               </span>
@@ -161,8 +169,7 @@
                 <span class="nav-link">Learn About</span>
             </li>
             <li class="nav-item menu-items">
-                <a class="nav-link"
-                   href="http://www.bootstrapdash.com/demo/corona-free/jquery/documentation/documentation.html">
+                <a class="nav-link" href="/panel">
               <span class="menu-icon">
                 <i class="mdi mdi-file-document-box"></i>
               </span>
@@ -176,8 +183,9 @@
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
             <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-                <a class="navbar-brand brand-logo-mini" href="index.html"><img src="assets/images/logo-mini.svg"
-                                                                               alt="logo"/></a>
+                <a class="navbar-brand brand-logo-mini" href="/panel">
+                    <span class="brand-logo-mini-text">A</span>
+                </a>
             </div>
             <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
                 <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -185,16 +193,16 @@
                 </button>
                 <ul class="navbar-nav w-100">
                     <li class="nav-item w-100">
-                        <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                            <input type="text" class="form-control" placeholder="Search products">
+                        <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search" th:action="@{/api/search}" method="get">
+                            <input type="text" name="q" class="form-control" placeholder="Search ranks, users..." required>
                         </form>
                     </li>
                 </ul>
                 <ul class="navbar-nav navbar-nav-right">
                     <li class="nav-item nav-settings d-none d-lg-block">
-                        <a class="nav-link" href="#">
-                            <i class="mdi mdi-view-grid"></i>
-                        </a>
+                        <button id="theme-toggle" class="nav-link theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                            <i class="mdi mdi-weather-sunny"></i>
+                        </button>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
@@ -209,7 +217,7 @@
                              aria-labelledby="profileDropdown">
                             <h6 class="p-3 mb-0">Profile</h6>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item preview-item">
+                            <a class="dropdown-item preview-item" th:href="@{/settings/account}">
                                 <div class="preview-thumbnail">
                                     <div class="preview-icon bg-dark rounded-circle">
                                         <i class="mdi mdi-settings text-success"></i>
@@ -220,7 +228,7 @@
                                 </div>
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item preview-item">
+                            <a class="dropdown-item preview-item" th:href="@{/logout}">
                                 <div class="preview-thumbnail">
                                     <div class="preview-icon bg-dark rounded-circle">
                                         <i class="mdi mdi-logout text-danger"></i>
@@ -261,11 +269,17 @@
                                  th:style="'background: ' + ${target.isOnline() ? '#3CB152' : '#E53A52'} + ';'">
                                 <strong th:text="${target.isOnline() ? 'Online' : 'Offline'}"></strong>
                                 <div th:if="${target.isOnline()}"
-                                     th:text="'Playing on ' + ${target.getNiceServerName()}"></div>
+                                     th:text="'Playing on ' + ${target.getRedisServerDisplay()}"></div>
                                 <div th:if="${!target.isOnline()}">
-                                    Last seen
-                                    <time th:datetime="${target.lastSeenAt}" data-format="ago"
-                                          data-toggle="tooltip"></time>
+                                    <span th:if="${lastSeenAgo != null}">
+                                        Last seen <span th:text="${lastSeenAgo}"></span> ago
+                                    </span>
+                                    <span th:if="${lastSeenAgo == null && target.lastLoginAt != null}">
+                                        Last seen <span th:text="${#dates.format(new java.util.Date(target.lastLoginAt), 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                    </span>
+                                    <span th:if="${lastSeenAgo == null && target.lastLoginAt == null}" class="text-muted">
+                                        Never logged in
+                                    </span>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -275,7 +289,7 @@
                                 <div class="player-username">
                                     <strong class="player-username" th:text="${target.username}"></strong>
                                 </div>
-                                <div class="player-rank" th:text="${target.getHighestGlobalRank().displayName}"></div>
+                                <div class="player-rank" th:text="${target.getHighestGlobalRank().displayName.replace('&c', '').replace('&4', '').replace('&r', '').replace('&l', '').replace('&o', '').replace('&n', '').replace('&m', '').replace('&k', '')}"></div>
                             </div>
                         </div>
                     </div>
@@ -284,17 +298,268 @@
                     <div class="col-xl-12 col-sm-6 grid-margin stretch-card">
                         <div class="card card-profile">
                             <div class="card-header">
-                                <button type="button" class="btn btn-inverse-success btn-fw">General</button>
-                                <button type="button" class="btn btn-inverse-info btn-fw">Punishments</button>
-                                <button type="button" class="btn btn-inverse-info btn-fw">Grants</button>
-                                <button type="button" class="btn btn-inverse-info btn-fw">Tickets</button>
-                                <button th:if="${target.getHighestGlobalRank().staff}" type="button" class="btn btn-inverse-info btn-fw">Staff History</button>
-                                <button th:if="${target.getHighestGlobalRank().staff}" type="button" class="btn btn-inverse-info btn-fw">Staff Performance</button>
+                                <a th:href="@{'/api/users/lookup/' + ${target.uuid.toString().replace('-', '')} + '?tab=general'}" 
+                                   th:classappend="${activeTab == 'general' ? 'btn btn-inverse-success btn-fw' : 'btn btn-inverse-info btn-fw'}">General</a>
+                                <a th:href="@{'/api/users/lookup/' + ${target.uuid.toString().replace('-', '')} + '?tab=punishments'}" 
+                                   th:classappend="${activeTab == 'punishments' ? 'btn btn-inverse-success btn-fw' : 'btn btn-inverse-info btn-fw'}">Punishments</a>
+                                <a th:href="@{'/api/users/lookup/' + ${target.uuid.toString().replace('-', '')} + '?tab=grants'}" 
+                                   th:classappend="${activeTab == 'grants' ? 'btn btn-inverse-success btn-fw' : 'btn btn-inverse-info btn-fw'}">Grants</a>
+                                <a th:href="@{'/api/users/lookup/' + ${target.uuid.toString().replace('-', '')} + '?tab=chatsnaps'}" 
+                                   th:classappend="${activeTab == 'chatsnaps' ? 'btn btn-inverse-success btn-fw' : 'btn btn-inverse-info btn-fw'}">ChatSnaps</a>
+                                <a th:href="@{'/api/users/lookup/' + ${target.uuid.toString().replace('-', '')} + '?tab=tickets'}" 
+                                   th:classappend="${activeTab == 'tickets' ? 'btn btn-inverse-success btn-fw' : 'btn btn-inverse-info btn-fw'}">Tickets</a>
+                                <a th:if="${target.getHighestGlobalRank().staff}" 
+                                   th:href="@{'/api/users/lookup/' + ${target.uuid.toString().replace('-', '')} + '?tab=staffhistory'}" 
+                                   th:classappend="${activeTab == 'staffhistory' ? 'btn btn-inverse-success btn-fw' : 'btn btn-inverse-info btn-fw'}">Staff History</a>
+                                <a th:if="${target.getHighestGlobalRank().staff}" 
+                                   th:href="@{'/api/users/lookup/' + ${target.uuid.toString().replace('-', '')} + '?tab=staffperformance'}" 
+                                   th:classappend="${activeTab == 'staffperformance' ? 'btn btn-inverse-success btn-fw' : 'btn btn-inverse-info btn-fw'}">Staff Performance</a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <!-- General Tab Content -->
+                <div class="row" th:if="${activeTab == 'general'}">
+                    <!-- Statistics Cards -->
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            <h3 class="mb-0" th:text="${target.coins}"></h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="icon icon-box-success">
+                                            <span class="mdi mdi-currency-usd icon-item"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="text-muted font-weight-normal">Coins</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            <h3 class="mb-0">
+                                                <span th:if="${target.playtimeMillis >= 86400000}">
+                                                    <span th:text="${(target.playtimeMillis / 86400000)}"></span>d
+                                                </span>
+                                                <span th:if="${target.playtimeMillis > 0 && target.playtimeMillis < 86400000}">
+                                                    <span th:text="${(target.playtimeMillis / 3600000)}"></span>h
+                                                </span>
+                                                <span th:if="${target.playtimeMillis == 0}">0h</span>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="icon icon-box-info">
+                                            <span class="mdi mdi-clock-outline icon-item"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="text-muted font-weight-normal">Playtime</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            <h3 class="mb-0" th:text="${target.friends.size()}"></h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="icon icon-box-warning">
+                                            <span class="mdi mdi-account-multiple icon-item"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="text-muted font-weight-normal">Friends</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            <h3 class="mb-0">
+                                                <label class="badge"
+                                                       th:style="@{'background: ' + ${currentHighestRank.getHexCodeFromColorCode()} + '; color: #ffffff !important;'}"
+                                                       th:text="${currentHighestRank.displayName.replace('&c', '').replace('&4', '').replace('&r', '').replace('&l', '').replace('&o', '').replace('&n', '').replace('&m', '').replace('&k', '')}"></label>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="icon icon-box-primary">
+                                            <span class="mdi mdi-trophy-award icon-item"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="text-muted font-weight-normal">
+                                    Current Rank
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rank History Timeline -->
+                    <div class="col-lg-12 grid-margin stretch-card" th:if="${rankHistory != null && !rankHistory.isEmpty()}">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Rank History Timeline</h4>
+                                <p class="card-description">Chronological history of ranks held by this user (most recent first)</p>
+                                <div class="timeline">
+                                    <div class="timeline-item" th:each="entry, iterStat : ${rankHistory}">
+                                        <div class="timeline-marker" 
+                                             th:classappend="${entry.isActive ? 'bg-success' : 'bg-secondary'}"></div>
+                                        <div class="timeline-content">
+                                            <h5>
+                                                <label class="badge" 
+                                                       th:style="@{'background: ' + ${entry.rank.getHexCodeFromColorCode()}}"
+                                                       th:text="${entry.rank.displayName.replace('&c', '').replace('&4', '').replace('&r', '').replace('&l', '').replace('&o', '').replace('&n', '').replace('&m', '').replace('&k', '')}"></label>
+                                                <span th:if="${entry.isActive}" class="badge badge-success ml-2">Active</span>
+                                                <span th:if="${!entry.isActive}" class="badge badge-secondary ml-2">Expired</span>
+                                                <small class="text-muted">(Weight: <span th:text="${entry.rank.weight}"></span>)</small>
+                                            </h5>
+                                            <p class="text-muted mb-1">
+                                                <strong>Granted:</strong> 
+                                                <span th:text="${#dates.format(new java.util.Date(entry.grantedAt), 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                            </p>
+                                            <p class="text-muted mb-1" th:if="${entry.grant != null && entry.grant.reason != null && !entry.grant.reason.isEmpty()}">
+                                                <strong>Reason:</strong> <span th:text="${entry.grant.reason}"></span>
+                                            </p>
+                                            <p class="text-muted mb-1" th:if="${entry.grant == null}">
+                                                <strong>Type:</strong> <span class="badge badge-info">Default Rank</span>
+                                            </p>
+                                            <p class="text-muted mb-0" th:if="${entry.grant != null}">
+                                                <strong>Duration:</strong> 
+                                                <span th:text="${entry.grant.expirable.duration == -1L ? 'Permanent' : ((entry.grant.expirable.duration / 86400000) + ' days')}"></span>
+                                            </p>
+                                            <p class="text-muted mb-0" th:if="${entry.grant == null}">
+                                                <strong>Duration:</strong> <span>Permanent</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Detailed Information Card -->
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Player Information</h4>
+                                <p class="card-description">Detailed statistics and information about this player</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                            <tr>
+                                                <td><strong>Username:</strong></td>
+                                                <td th:text="${target.username}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>UUID:</strong></td>
+                                                <td><code th:text="${target.uuid}"></code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Rank:</strong></td>
+                                                <td>
+                                                    <label class="badge"
+                                                           th:style="@{'background: ' + ${target.getHighestGlobalRank().getHexCodeFromColorCode()}}"
+                                                           th:text="${target.getHighestGlobalRank().displayName}"></label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Coins:</strong></td>
+                                                <td th:text="${target.coins}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Playtime:</strong></td>
+                                                <td>
+                                                    <span th:if="${target.playtimeMillis >= 86400000}">
+                                                        <span th:text="${(target.playtimeMillis / 86400000)}"></span>d 
+                                                        <span th:text="${(target.playtimeMillis / 3600000) % 24}"></span>h 
+                                                        <span th:text="${(target.playtimeMillis / 60000) % 60}"></span>m
+                                                    </span>
+                                                    <span th:if="${target.playtimeMillis > 0 && target.playtimeMillis < 86400000}">
+                                                        <span th:text="${(target.playtimeMillis / 3600000)}"></span>h 
+                                                        <span th:text="${(target.playtimeMillis / 60000) % 60}"></span>m
+                                                    </span>
+                                                    <span th:if="${target.playtimeMillis == 0}" class="text-muted">No playtime recorded</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Current Server:</strong></td>
+                                                <td>
+                                                    <span th:if="${target.isOnline()}" th:text="${target.getRedisServerDisplay()}"></span>
+                                                    <span th:if="${!target.isOnline()}" class="text-muted">Offline</span>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                            <tr>
+                                                <td><strong>First Login:</strong></td>
+                                                <td>
+                                                    <span th:if="${target.firstLoginAt != null}" 
+                                                          th:text="${#dates.format(new java.util.Date(target.firstLoginAt), 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                                    <span th:if="${target.firstLoginAt == null}" class="text-muted">Never</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Last Login:</strong></td>
+                                                <td>
+                                                    <span th:if="${target.lastLoginAt != null}" 
+                                                          th:text="${#dates.format(new java.util.Date(target.lastLoginAt), 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                                    <span th:if="${target.lastLoginAt == null}" class="text-muted">Never</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Status:</strong></td>
+                                                <td>
+                                                    <label th:if="${target.isOnline()}" class="badge badge-success">Online</label>
+                                                    <label th:if="${!target.isOnline()}" class="badge badge-danger">Offline</label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Friends:</strong></td>
+                                                <td th:text="${target.friends.size()} + ' friend(s)'"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Extra Permissions:</strong></td>
+                                                <td th:text="${target.getExtraPermissions(true).size()} + ' permission(s)'"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Staff Rank:</strong></td>
+                                                <td>
+                                                    <label th:if="${target.getHighestGlobalRank().staff}" class="badge badge-warning">Yes</label>
+                                                    <label th:if="${!target.getHighestGlobalRank().staff}" class="badge badge-secondary">No</label>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Friends List -->
                     <div class="col-lg-12 grid-margin stretch-card">
                         <div class="card">
                             <div class="card-body">
@@ -312,7 +577,10 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr th:each="profile : ${users}">
+                                        <tr th:each="profile : ${users}" 
+                                            th:attr="data-user-uuid=${profile.uuid.toString().replace('-', '')}"
+                                            class="clickable-row"
+                                            style="cursor: pointer;">
                                             <td><img class="img-xs rounded-circle"
                                                      th:src="@{'https://visage.surgeplay.com/bust/48/' + ${profile.uuid.toString().replace('-', '')} + '?overlay=true&scale=3'}"
                                             >
@@ -323,10 +591,300 @@
                                                        th:text="${profile.getHighestGlobalRank().displayName}"></label>
                                             </td>
                                             <td th:text="${profile.getExtraPermissions(true).size()}"></td>
-                                            <td th:text="'Never'"></td>
+                                            <td>
+                                                <span th:if="${profile.isOnline()}" class="text-success">Online</span>
+                                                <span th:if="${!profile.isOnline() && profile.lastLoginAt != null}" th:text="${profile.getFormattedLastLogin()}"></span>
+                                                <span th:if="${!profile.isOnline() && profile.lastLoginAt == null}" class="text-muted">Never</span>
+                                            </td>
                                         </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Punishments Tab Content -->
+                <div class="row" th:if="${activeTab == 'punishments'}">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Punishments</h4>
+                                <p class="card-description">All punishments for this user</p>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Reason</th>
+                                            <th>Issued By</th>
+                                            <th>Date</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="punishment : ${punishments}">
+                                            <td><label class="badge badge-danger" th:text="${punishment.getGrantable().name}"></label></td>
+                                            <td th:text="${punishment.reason}"></td>
+                                            <td th:text="${punishment.getIssuedByName()}"></td>
+                                            <td th:text="${#dates.format(new java.util.Date(punishment.expirable.addedAt), 'yyyy-MM-dd HH:mm')}"></td>
+                                            <td>
+                                                <span th:if="${punishment.expirable.duration == -1L || punishment.expirable.duration == 9223372036854775807L || punishment.expirable.duration > 31536000000000L}">Permanent</span>
+                                                <span th:if="${punishment.expirable.duration != -1L && punishment.expirable.duration != 9223372036854775807L && punishment.expirable.duration <= 31536000000000L}">
+                                                    <span th:if="${punishment.expirable.duration >= 86400000L}">
+                                                        <span th:text="${#numbers.formatDecimal((punishment.expirable.duration / 86400000.0), 0, 0)}"></span> day<span th:if="${(punishment.expirable.duration / 86400000L) > 1}">s</span>
+                                                    </span>
+                                                    <span th:if="${punishment.expirable.duration < 86400000L && punishment.expirable.duration >= 3600000L}">
+                                                        <span th:text="${#numbers.formatDecimal((punishment.expirable.duration / 3600000.0), 0, 0)}"></span> hour<span th:if="${(punishment.expirable.duration / 3600000L) > 1}">s</span>
+                                                    </span>
+                                                    <span th:if="${punishment.expirable.duration < 3600000L && punishment.expirable.duration >= 60000L}">
+                                                        <span th:text="${#numbers.formatDecimal((punishment.expirable.duration / 60000.0), 0, 0)}"></span> minute<span th:if="${(punishment.expirable.duration / 60000L) > 1}">s</span>
+                                                    </span>
+                                                    <span th:if="${punishment.expirable.duration < 60000L}">
+                                                        <span th:text="${#numbers.formatDecimal((punishment.expirable.duration / 1000.0), 0, 0)}"></span> second<span th:if="${(punishment.expirable.duration / 1000L) > 1}">s</span>
+                                                    </span>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <label th:if="${punishment.expirable.isActive()}" class="badge badge-success">Active</label>
+                                                <label th:if="${!punishment.expirable.isActive() && punishment.removedBy != null}" class="badge badge-warning">Removed</label>
+                                                <label th:if="${!punishment.expirable.isActive() && punishment.removedBy == null}" class="badge badge-secondary">Expired</label>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${punishments == null || punishments.isEmpty()}">
+                                            <td colspan="6" class="text-center text-muted">No punishments found</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ChatSnaps Tab Content -->
+                <div class="row" th:if="${activeTab == 'chatsnaps'}">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">ChatSnap History</h4>
+                                <p class="card-description">Chat snapshots saved for this user</p>
+                                <div th:if="${chatSnaps != null && !chatSnaps.isEmpty()}">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Created</th>
+                                                <th>Messages</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="snap : ${chatSnaps}" 
+                                                th:attr="data-snap-id=${snap.numericId}"
+                                                class="clickable-row"
+                                                style="cursor: pointer;">
+                                                <td>
+                                                    <span class="badge badge-info">#<span th:text="${snap.numericId}"></span></span>
+                                                </td>
+                                                <td>
+                                                    <span th:text="${#dates.format(new java.util.Date(snap.createdAt), 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-secondary" th:text="${snap.messages.size()} + ' messages'"></span>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-primary" 
+                                                            th:onclick="'showChatSnap(' + ${snap.numericId} + '); event.stopPropagation();'">
+                                                        <i class="mdi mdi-eye"></i> View
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div th:if="${chatSnaps == null || chatSnaps.isEmpty()}" class="text-center py-5">
+                                    <i class="mdi mdi-message-text-outline" style="font-size: 3rem; color: var(--theme-text-secondary);"></i>
+                                    <p class="text-muted mt-3">No ChatSnaps found for this user</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div th:each="snap : ${chatSnaps}" class="col-lg-12 grid-margin stretch-card" th:id="'chatsnap-' + ${snap.numericId}" style="display: none;">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h4 class="card-title mb-0">ChatSnap #<span th:text="${snap.numericId}"></span></h4>
+                                        <p class="text-muted mb-0">
+                                            Created: <span th:text="${#dates.format(new java.util.Date(snap.createdAt), 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                        </p>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-secondary" th:onclick="'hideChatSnap(' + ${snap.numericId} + ')'">
+                                        <i class="mdi mdi-close"></i> Close
+                                    </button>
+                                </div>
+                                <div class="chat-snap-messages" style="background: var(--theme-bg-primary); border: 1px solid var(--theme-border); border-radius: 8px; padding: 1rem; max-height: 500px; overflow-y: auto;">
+                                    <div th:each="message : ${snap.messages}" class="mb-2" style="color: var(--theme-text-primary); font-family: monospace; font-size: 0.9rem;">
+                                        <span th:utext="${message}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row" th:if="${activeTab == 'grants'}">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Rank Grants</h4>
+                                <p class="card-description">All rank grants for this user</p>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Reason</th>
+                                            <th>Issued By</th>
+                                            <th>Date</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="grant : ${grants}">
+                                            <td><label class="badge" 
+                                                       th:style="@{'background: ' + ${grant.getGrantable().getHexCodeFromColorCode()}}"
+                                                       th:text="${grant.getGrantable().displayName}"></label></td>
+                                            <td th:text="${grant.reason}"></td>
+                                            <td th:text="${grant.getIssuedByName()}"></td>
+                                            <td th:text="${#dates.format(new java.util.Date(grant.expirable.addedAt), 'yyyy-MM-dd HH:mm')}"></td>
+                                            <td>
+                                                <span th:if="${grant.expirable.duration == -1L || grant.expirable.duration == 9223372036854775807L || grant.expirable.duration > 31536000000000L}">Permanent</span>
+                                                <span th:if="${grant.expirable.duration != -1L && grant.expirable.duration != 9223372036854775807L && grant.expirable.duration <= 31536000000000L}">
+                                                    <span th:if="${grant.expirable.duration >= 86400000L}">
+                                                        <span th:text="${#numbers.formatDecimal((grant.expirable.duration / 86400000.0), 0, 0)}"></span> day<span th:if="${(grant.expirable.duration / 86400000L) > 1}">s</span>
+                                                    </span>
+                                                    <span th:if="${grant.expirable.duration < 86400000L && grant.expirable.duration >= 3600000L}">
+                                                        <span th:text="${#numbers.formatDecimal((grant.expirable.duration / 3600000.0), 0, 0)}"></span> hour<span th:if="${(grant.expirable.duration / 3600000L) > 1}">s</span>
+                                                    </span>
+                                                    <span th:if="${grant.expirable.duration < 3600000L && grant.expirable.duration >= 60000L}">
+                                                        <span th:text="${#numbers.formatDecimal((grant.expirable.duration / 60000.0), 0, 0)}"></span> minute<span th:if="${(grant.expirable.duration / 60000L) > 1}">s</span>
+                                                    </span>
+                                                    <span th:if="${grant.expirable.duration < 60000L}">
+                                                        <span th:text="${#numbers.formatDecimal((grant.expirable.duration / 1000.0), 0, 0)}"></span> second<span th:if="${(grant.expirable.duration / 1000L) > 1}">s</span>
+                                                    </span>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <label th:if="${grant.expirable.isActive()}" class="badge badge-success">Active</label>
+                                                <label th:if="${!grant.expirable.isActive()}" class="badge badge-secondary">Expired</label>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${grants == null || grants.isEmpty()}">
+                                            <td colspan="6" class="text-center text-muted">No grants found</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tickets Tab Content -->
+                <div class="row" th:if="${activeTab == 'tickets'}">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Tickets</h4>
+                                <p class="card-description">Support tickets for this user</p>
+                                <div class="alert alert-info">
+                                    <p class="mb-0">Ticket system coming soon.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff History Tab Content -->
+                <div class="row" th:if="${activeTab == 'staffhistory'}">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Staff History</h4>
+                                <p class="card-description">Punishments issued by this staff member</p>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Target</th>
+                                            <th>Reason</th>
+                                            <th>Date</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="punishmentWithTarget : ${staffHistory}">
+                                            <td>
+                                                <label class="badge badge-danger" th:text="${punishmentWithTarget.punishment.getGrantable().name}"></label>
+                                            </td>
+                                            <td>
+                                                <span th:text="${punishmentWithTarget.targetName}"></span>
+                                            </td>
+                                            <td th:text="${punishmentWithTarget.punishment.reason}"></td>
+                                            <td th:text="${#dates.format(new java.util.Date(punishmentWithTarget.punishment.expirable.addedAt), 'yyyy-MM-dd HH:mm')}"></td>
+                                            <td>
+                                                <span th:if="${punishmentWithTarget.punishment.expirable.duration == -1L || punishmentWithTarget.punishment.expirable.duration == 9223372036854775807L || punishmentWithTarget.punishment.expirable.duration > 31536000000000L}">Permanent</span>
+                                                <span th:if="${punishmentWithTarget.punishment.expirable.duration != -1L && punishmentWithTarget.punishment.expirable.duration != 9223372036854775807L && punishmentWithTarget.punishment.expirable.duration <= 31536000000000L}">
+                                                    <span th:if="${punishmentWithTarget.punishment.expirable.duration >= 86400000L}">
+                                                        <span th:text="${#numbers.formatDecimal((punishmentWithTarget.punishment.expirable.duration / 86400000.0), 0, 0)}"></span> day<span th:if="${(punishmentWithTarget.punishment.expirable.duration / 86400000L) > 1}">s</span>
+                                                    </span>
+                                                    <span th:if="${punishmentWithTarget.punishment.expirable.duration < 86400000L && punishmentWithTarget.punishment.expirable.duration >= 3600000L}">
+                                                        <span th:text="${#numbers.formatDecimal((punishmentWithTarget.punishment.expirable.duration / 3600000.0), 0, 0)}"></span> hour<span th:if="${(punishmentWithTarget.punishment.expirable.duration / 3600000L) > 1}">s</span>
+                                                    </span>
+                                                    <span th:if="${punishmentWithTarget.punishment.expirable.duration < 3600000L && punishmentWithTarget.punishment.expirable.duration >= 60000L}">
+                                                        <span th:text="${#numbers.formatDecimal((punishmentWithTarget.punishment.expirable.duration / 60000.0), 0, 0)}"></span> minute<span th:if="${(punishmentWithTarget.punishment.expirable.duration / 60000L) > 1}">s</span>
+                                                    </span>
+                                                    <span th:if="${punishmentWithTarget.punishment.expirable.duration < 60000L}">
+                                                        <span th:text="${#numbers.formatDecimal((punishmentWithTarget.punishment.expirable.duration / 1000.0), 0, 0)}"></span> second<span th:if="${(punishmentWithTarget.punishment.expirable.duration / 1000L) > 1}">s</span>
+                                                    </span>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <label th:if="${punishmentWithTarget.punishment.expirable.isActive()}" class="badge badge-success">Active</label>
+                                                <label th:if="${!punishmentWithTarget.punishment.expirable.isActive() && punishmentWithTarget.punishment.removedBy != null}" class="badge badge-warning">Removed</label>
+                                                <label th:if="${!punishmentWithTarget.punishment.expirable.isActive() && punishmentWithTarget.punishment.removedBy == null}" class="badge badge-secondary">Expired</label>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${staffHistory == null || staffHistory.isEmpty()}">
+                                            <td colspan="6" class="text-center text-muted">No punishments issued by this staff member</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Performance Tab Content -->
+                <div class="row" th:if="${activeTab == 'staffperformance'}">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Staff Performance</h4>
+                                <p class="card-description">Staff performance metrics</p>
+                                <div class="alert alert-info">
+                                    <p class="mb-0">Staff performance metrics coming soon.</p>
                                 </div>
                             </div>
                         </div>
@@ -340,26 +898,45 @@
 </div>
 </div>
 <!-- container-scroller -->
-<!-- plugins:js -->
-<script src="assets/vendors/js/vendor.bundle.base.js"></script>
-<!-- endinject -->
-<!-- Plugin js for this page -->
-<script src="assets/vendors/chart.js/Chart.min.js"></script>
-<script src="assets/vendors/progressbar.js/progressbar.min.js"></script>
-<script src="assets/vendors/jvectormap/jquery-jvectormap.min.js"></script>
-<script src="assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-<script src="assets/vendors/owl-carousel-2/owl.carousel.min.js"></script>
-<script src="assets/js/jquery.cookie.js" type="text/javascript"></script>
-<!-- End plugin js for this page -->
-<!-- inject:js -->
-<script src="assets/js/off-canvas.js"></script>
-<script src="assets/js/hoverable-collapse.js"></script>
-<script src="assets/js/misc.js"></script>
-<script src="assets/js/settings.js"></script>
-<script src="assets/js/todolist.js"></script>
-<!-- endinject -->
-<!-- Custom js for this page -->
-<script src="assets/js/dashboard.js"></script>
-<!-- End custom js for this page -->
+<!-- Custom js -->
+<script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/menu.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const clickableRows = document.querySelectorAll('.clickable-row');
+        clickableRows.forEach(function(row) {
+            row.addEventListener('click', function(e) {
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button') || e.target.closest('a')) {
+                    return;
+                }
+                
+                const uuid = this.getAttribute('data-user-uuid');
+                const snapId = this.getAttribute('data-snap-id');
+                
+                if (uuid) {
+                    window.location.href = '/api/users/lookup/' + uuid;
+                } else if (snapId) {
+                    showChatSnap(parseInt(snapId));
+                }
+            });
+        });
+    });
+    
+    function showChatSnap(numericId) {
+        var snapElement = document.getElementById('chatsnap-' + numericId);
+        if (snapElement) {
+            snapElement.style.display = 'block';
+            snapElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+    
+    function hideChatSnap(numericId) {
+        var snapElement = document.getElementById('chatsnap-' + numericId);
+        if (snapElement) {
+            snapElement.style.display = 'none';
+        }
+    }
+</script>
+<!-- End custom js -->
 </body>
 </html>

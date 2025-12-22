@@ -64,6 +64,11 @@ open class WebSecurity : WebSecurityConfigurerAdapter()
             .loginPage("/login").failureUrl("/login?error=true")
             .usernameParameter("username")
             .passwordParameter("password")
+            .and().exceptionHandling()
+            .authenticationEntryPoint { request, response, authException ->
+                // Redirect to login with error message when authentication is required
+                response.sendRedirect("/login?auth_required=true")
+            }
             .and().logout()
             .logoutRequestMatcher(AntPathRequestMatcher("/logout"))
             .logoutSuccessUrl("/login").addLogoutHandler { req, res, auth ->
