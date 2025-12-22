@@ -1,7 +1,10 @@
 package ltd.matrixstudios.website.landing
 
 import ltd.matrixstudios.alchemist.models.website.AlchemistUser
+import ltd.matrixstudios.alchemist.redis.RedisOnlineStatusService.getOnlinePlayersCount
+import ltd.matrixstudios.alchemist.service.server.UniqueServerService
 import ltd.matrixstudios.website.ranks.RankRepository
+import ltd.matrixstudios.website.user.loader.UserServicesComponent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
@@ -32,6 +35,9 @@ class LandingController @Autowired constructor(private val rankRepository: RankR
 
         modelAndView.addObject("user", profile)
         modelAndView.addObject("rankSize", rankRepository.findAll().size)
+        modelAndView.addObject("userCount", getOnlinePlayersCount())
+        modelAndView.addObject("serverCount", UniqueServerService.getValues().size)
+
         return modelAndView
     }
 }

@@ -21,6 +21,29 @@
     <link rel="stylesheet" href="../static/vendors/owl-carousel-2/owl.theme.default.min.css"
           th:href="@{/vendors/owl-carousel-2/owl.theme.default.min.css}">
     <!-- End plugin css for this page -->
+    <!-- `website/src/main/resources/templates/ranks.html` -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.png}"/>
+
+    <!-- plugins:js -->
+    <script th:src="@{/assets/vendors/js/vendor.bundle.base.js}"></script>
+
+    <!-- Plugin js for this page -->
+    <script th:src="@{/assets/vendors/chart.js/Chart.min.js}"></script>
+    <script th:src="@{/assets/vendors/progressbar.js/progressbar.min.js}"></script>
+    <script th:src="@{/assets/vendors/jvectormap/jquery-jvectormap.min.js}"></script>
+    <script th:src="@{/assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js}"></script>
+    <script th:src="@{/assets/vendors/owl-carousel-2/owl.carousel.min.js}"></script>
+    <script th:src="@{/assets/js/jquery.cookie.js}"></script>
+
+    <!-- inject:js -->
+    <script th:src="@{/assets/js/off-canvas.js}"></script>
+    <script th:src="@{/assets/js/hoverable-collapse.js}"></script>
+    <script th:src="@{/assets/js/misc.js}"></script>
+    <script th:src="@{/assets/js/settings.js}"></script>
+    <script th:src="@{/assets/js/todolist.js}"></script>
+
+    <!-- Custom js for this page -->
+    <script th:src="@{/assets/js/dashboard.js}"></script>
     <!-- inject:css -->
     <!-- endinject -->
     <!-- Layout styles -->
@@ -159,7 +182,7 @@
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
             <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-                <a class="navbar-brand brand-logo-mini" href="index.html"><img src="assets/images/logo-mini.svg"
+                <a class="navbar-brand brand-logo-mini" href="index.html"><img src="assets/images/favicon.png"
                                                                                alt="logo"/></a>
             </div>
             <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
@@ -202,7 +225,7 @@
                                 </div>
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item preview-item">
+                            <a class="dropdown-item preview-item" th:href="@{/logout}">
                                 <div class="preview-thumbnail">
                                     <div class="preview-icon bg-dark rounded-circle">
                                         <i class="mdi mdi-logout text-danger"></i>
@@ -257,7 +280,14 @@
                                         </thead>
                                         <tbody>
                                         <tr th:each="rank : ${ranks}">
-                                            <td><label class="badge" th:style="@{'background: ' + ${rank.getHexCodeFromColorCode()}}" th:text="${rank.displayName}"></label></td>
+                                            <td>
+                                                <a th:href="@{'/api/rank-editor/' + ${rank.id}}">
+                                                    <label class="badge"
+                                                           th:style="@{'background: ' + ${rank.getHexCodeFromColorCode()}}"
+                                                           th:text="${rank.displayName}">
+                                                    </label>
+                                                </a>
+                                            </td>
                                             <td th:text="${rank.name}"></td>
                                             <td th:text="${rank.weight}"></td>
                                             <td th:text="${rank.getRankScope().global ? 'Global' : rank.getRankScope().servers.size()}"></td>
